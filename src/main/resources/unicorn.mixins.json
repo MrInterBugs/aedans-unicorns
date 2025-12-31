@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "uk.mrinterbugs.unicorn.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AbstractHorseEntityMixin",
+    "BrewingRecipeRegistryMixin",
+    "LivingEntityMixin",
+    "HorseScreenHandlerMixin"
+  ],
+  "client": [
+    "HorseScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

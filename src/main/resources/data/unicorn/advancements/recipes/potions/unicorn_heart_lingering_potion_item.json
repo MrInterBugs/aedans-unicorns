@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_unicorn_heart_splash": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [ { "items": [ "unicorn:unicorn_heart_splash_potion_item" ] } ]
+      }
+    }
+  },
+  "requirements": [ [ "has_unicorn_heart_splash" ] ],
+  "rewards": {
+    "recipes": [ "unicorn:unicorn_heart_lingering_potion_item" ]
+  }
+}

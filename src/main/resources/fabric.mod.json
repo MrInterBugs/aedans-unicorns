@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "unicorn",
+  "version": "${version}",
+  "name": "Aedans Unicorns",
+  "description": "Adds a shiny new unicorn horn to your world to save your horses from an untimely demise.",
+  "authors": ["MrInterBugs"],
+  "contact": {
+    "homepage": "https://unicorn.mrinterbugs.uk/",
+    "sources": "https://github.com/mrinterbugs/unicorn/source"
+  },
+  "license": "MIT",
+  "icon": "assets/unicorn/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "uk.mrinterbugs.unicorn.UnicornMod"
+    ],
+    "rei_client": [
+      "uk.mrinterbugs.unicorn.client.UnicornReiPlugin"
+    ],
+    "client": [
+      "uk.mrinterbugs.unicorn.client.UnicornClientMod"
+    ]
+  },
+  "mixins": [
+    "unicorn.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": ">=${fabric_version}",
+    "minecraft": "${minecraft_version}",
+    "java": ">=21"
+  }
+}

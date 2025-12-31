@@ -1,0 +1,14 @@
+.gradle/
+.gradle/8*/**
+gradle-*-bin.zip
+gradle-[0-9]*/
+build/
+run/
+out/
+classes/
+*.log
+*.tmp
+*.iml
+.idea/
+.DS_Store
+loom-debug.log

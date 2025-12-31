@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "unicorn:unicorn_horn" },
+    { "item": "minecraft:potion", "nbt": "{Potion:\"minecraft:awkward\"}" }
+  ],
+  "result": {
+    "item": "unicorn:unicorn_heart_potion_item",
+    "components": {
+      "minecraft:potion_contents": { "potion": "unicorn:unicorn_heart_potion" }
+    },
+    "nbt": "{Potion:\"unicorn:unicorn_heart_potion\"}"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "APA",
+    "AAA"
+  ],
+  "key": {
+    "A": { "item": "minecraft:arrow" },
+    "P": {
+      "item": "unicorn:unicorn_heart_lingering_potion_item",
+      "nbt": "{Potion:\"unicorn:unicorn_heart_potion\"}"
+    }
+  },
+  "result": {
+    "item": "unicorn:unicorn_heart_tipped_arrow",
+    "count": 8,
+    "components": {
+      "minecraft:potion_contents": { "potion": "unicorn:unicorn_heart_potion" }
+    },
+    "nbt": "{Potion:\"unicorn:unicorn_heart_potion\"}"
+  }
+}

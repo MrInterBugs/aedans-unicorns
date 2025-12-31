@@ -1,0 +1,80 @@
+plugins {
+    id 'fabric-loom' version "${loom_version}"
+    id 'maven-publish'
+}
+
+def modVersion = providers.gradleProperty("mod_version")
+def loaderVersion = providers.gradleProperty("loader_version")
+def fabricVersion = providers.gradleProperty("fabric_version")
+def minecraftVersion = providers.gradleProperty("minecraft_version")
+def reiVersion = providers.gradleProperty("rei_version")
+def lombokVersion = "1.18.32"
+def archivesBaseName = providers.gradleProperty("archives_base_name").get()
+
+group = property('maven_group')
+version = modVersion.get()
+base.archivesName = archivesBaseName
+
+repositories {
+    mavenCentral()
+    maven { url = "https://maven.fabricmc.net/" }
+    maven { url = "https://maven.shedaniel.me/" }
+}
+
+loom {
+    splitEnvironmentSourceSets()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraftVersion.get()}"
+    mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${loaderVersion.get()}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion.get()}"
+    clientImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion.get()}"
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion.get()}"
+    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion.get()}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+}
+
+processResources {
+    inputs.property "version", modVersion
+    filteringCharset = 'UTF-8'
+    def expandProps = [
+            version: modVersion.get(),
+            loader_version: loaderVersion.get(),
+            fabric_version: fabricVersion.get(),
+            minecraft_version: minecraftVersion.get()
+    ]
+    filesMatching("fabric.mod.json") {
+        expand(expandProps)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${archivesBaseName}" }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}

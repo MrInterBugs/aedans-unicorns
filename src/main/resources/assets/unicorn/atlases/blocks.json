@@ -1,0 +1,8 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "unicorn:item/unicorn_horn_outline"
+    }
+  ]
+}

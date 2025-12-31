@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_unicorn_horn": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [ { "items": [ "unicorn:unicorn_horn" ] } ]
+      }
+    }
+  },
+  "requirements": [ [ "has_unicorn_horn" ] ],
+  "rewards": {
+    "recipes": [ "unicorn:unicorn_heart_potion_item" ]
+  }
+}
