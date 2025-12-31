@@ -31,8 +31,8 @@ public abstract class HorseScreenMixin extends HandledScreen<HorseScreenHandler>
      */
     @Inject(method = "drawBackground", at = @At("TAIL"))
     private void unicorn$drawHornSlot(DrawContext context, float delta, int mouseX, int mouseY, CallbackInfo ci) {
-        int slotX = this.x + 7;
-        int slotY = this.y + 53;
+        int slotX = this.x + 25;
+        int slotY = this.y + 17;
         context.drawGuiTexture(UNICORN_HORN_SLOT_TEXTURE, slotX, slotY, 18, 18);
     }
 }

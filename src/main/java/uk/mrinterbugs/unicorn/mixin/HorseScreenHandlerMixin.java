@@ -43,8 +43,8 @@ public abstract class HorseScreenHandlerMixin extends ScreenHandler {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void unicorn$addHornSlot(int syncId, PlayerInventory playerInventory, Inventory inventory, AbstractHorseEntity entity, int inventoryColumns, CallbackInfo ci) {
         int hornInventoryIndex = this.inventory.size() - 1;
-        int hornSlotX = 8;
-        int hornSlotY = 54;
+        int hornSlotX = 26;
+        int hornSlotY = 18;
 
         this.addSlot(new Slot(this.inventory, hornInventoryIndex, hornSlotX, hornSlotY) {
             @Override
