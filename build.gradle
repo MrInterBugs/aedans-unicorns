@@ -3,16 +3,16 @@ plugins {
     id 'maven-publish'
 }
 
-def modVersion = providers.gradleProperty("mod_version")
-def loaderVersion = providers.gradleProperty("loader_version")
-def fabricVersion = providers.gradleProperty("fabric_version")
-def minecraftVersion = providers.gradleProperty("minecraft_version")
-def reiVersion = providers.gradleProperty("rei_version")
-def lombokVersion = "1.18.32"
+def modVersion = providers.gradleProperty("mod_version").get()
+def loaderVersion = providers.gradleProperty("loader_version").get()
+def fabricVersion = providers.gradleProperty("fabric_version").get()
+def minecraftVersion = providers.gradleProperty("minecraft_version").get()
+def reiVersion = providers.gradleProperty("rei_version").get()
+def lombokVersion = providers.gradleProperty("lombok_version").get()
 def archivesBaseName = providers.gradleProperty("archives_base_name").get()
 
 group = property('maven_group')
-version = modVersion.get()
+version = modVersion
 base.archivesName = archivesBaseName
 
 repositories {
@@ -26,13 +26,13 @@ loom {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${minecraftVersion.get()}"
+    minecraft "com.mojang:minecraft:${minecraftVersion}"
     mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${loaderVersion.get()}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion.get()}"
-    clientImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion.get()}"
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion.get()}"
-    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion.get()}"
+    modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
+    clientImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
+    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
@@ -41,10 +41,10 @@ processResources {
     inputs.property "version", modVersion
     filteringCharset = 'UTF-8'
     def expandProps = [
-            version: modVersion.get(),
-            loader_version: loaderVersion.get(),
-            fabric_version: fabricVersion.get(),
-            minecraft_version: minecraftVersion.get()
+            version: modVersion,
+            loader_version: loaderVersion,
+            fabric_version: fabricVersion,
+            minecraft_version: minecraftVersion
     ]
     filesMatching("fabric.mod.json") {
         expand(expandProps)
