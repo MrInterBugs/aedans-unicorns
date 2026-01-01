@@ -35,14 +35,14 @@ jobs:
           body: "Automated release for tag ${{ github.ref_name }}"
           files: build/libs/*.jar
 
-      - name: Upload to Modrinth
-        uses: cloudnode-pro/modrinth-publish@v2
+      - name: Publish to Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
         with:
-          token: ${{ secrets.MODRINTH_TOKEN }}
-          project: gWWYaw4W
+          modrinth-id: gWWYaw4W
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: build/libs/aedans-unicorn-${{ github.ref_name }}.jar
           name: "Aedan's Unicorns ${{ github.ref_name }}"
           version: ${{ github.ref_name }}
           changelog: "See GitHub for full changelog."
           loaders: fabric
           game-versions: 1.21.1
-          files: build/libs/*.jar
