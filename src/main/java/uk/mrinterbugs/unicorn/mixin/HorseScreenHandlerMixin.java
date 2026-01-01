@@ -68,32 +68,39 @@ public abstract class HorseScreenHandlerMixin extends ScreenHandler {
     }
 
     /**
-     * Moves a unicorn horn into the dedicated slot when shift-clicked.
+     * Moves a unicorn horn into the dedicated slot when shift-clicked,
+     * OR moves it back to the inventory if shift-clicked from the horn slot.
      */
     @Inject(method = "quickMove", at = @At("HEAD"), cancellable = true)
     private void unicorn$quickMoveHorn(PlayerEntity player, int index, CallbackInfoReturnable<ItemStack> cir) {
         int hornSlotIndex = unicorn$getHornSlotIndex();
-        if (hornSlotIndex == -1 || index == hornSlotIndex) {
-            return;
-        }
+        if (hornSlotIndex == -1) return;
 
         Slot fromSlot = this.getSlot(index);
-        if (fromSlot == null || !fromSlot.hasStack()) {
-            return;
-        }
+        if (fromSlot == null || !fromSlot.hasStack()) return;
 
         ItemStack stack = fromSlot.getStack();
-        if (!stack.isOf(UnicornMod.UNICORN_HORN)) {
-            return;
-        }
-
-        Slot hornSlot = this.getSlot(hornSlotIndex);
-        if (hornSlot.hasStack() || !hornSlot.canInsert(stack)) {
-            return;
-        }
-
         ItemStack original = stack.copy();
-        if (!this.insertItem(stack, hornSlotIndex, hornSlotIndex + 1, false)) {
+
+        if (index == hornSlotIndex) {
+            int playerInvStart = this.slots.size() - 36;
+            int playerInvEnd = this.slots.size();
+
+            if (!this.insertItem(stack, playerInvStart, playerInvEnd, true)) {
+                return;
+            }
+        } 
+        else if (stack.isOf(UnicornMod.UNICORN_HORN)) {
+            Slot hornSlot = this.getSlot(hornSlotIndex);
+            
+            if (hornSlot.hasStack() || !hornSlot.canInsert(stack)) {
+                return;
+            }
+
+            if (!this.insertItem(stack, hornSlotIndex, hornSlotIndex + 1, false)) {
+                return;
+            }
+        } else {
             return;
         }
 
