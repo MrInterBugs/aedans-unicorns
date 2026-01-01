@@ -30,6 +30,9 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: "Automated release for tag ${{ github.ref_name }}"
           files: build/libs/*.jar
 
       - name: Upload to Modrinth
@@ -37,9 +40,9 @@ jobs:
         with:
           token: ${{ secrets.MODRINTH_TOKEN }}
           project: aedans-unicorns
-          name: ${{ github.event.release.name }}
-          version: ${{ github.event.release.tag_name }}
-          changelog: ${{ github.event.release.body }}
+          name: "Aedan's Unicorns ${{ github.ref_name }}"
+          version: ${{ github.ref_name }}
+          changelog: "See GitHub for full changelog."
           loaders: paper
           game-versions: 1.21.1
-          files: build/libs/aedans-unicorn-${{ github.event.release.tag_name }}.jar
+          files: build/libs/aedans-unicorn-${{ github.ref_name }}.jar
