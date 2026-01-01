@@ -45,4 +45,4 @@ jobs:
           changelog: "See GitHub for full changelog."
           loaders: fabric
           game-versions: 1.21.1
-          files: ${{ github.workspace }}/build/libs/aedans-unicorn-${{ github.ref_name }}.jar
+          files: build/libs/*.jar
