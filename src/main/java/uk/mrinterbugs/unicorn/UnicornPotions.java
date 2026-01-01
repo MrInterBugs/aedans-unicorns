@@ -8,6 +8,8 @@ import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.potion.Potion;
+import net.minecraft.registry.entry.RegistryEntry;
 
 /**
  * Helpers and constants for unicorn potion items and contents.
@@ -27,6 +29,13 @@ public class UnicornPotions {
      */
     public ItemStack createUnicornPotionStack(Item baseItem) {
         return PotionContentsComponent.createStack(baseItem, UnicornMod.UNICORN_HEART_POTION_ENTRY);
+    }
+
+    /**
+     * Builds a potion stack with the given potion entry for the given container item.
+     */
+    public ItemStack createPotionStack(Item baseItem, RegistryEntry<Potion> potion) {
+        return PotionContentsComponent.createStack(baseItem, potion);
     }
 
     /**

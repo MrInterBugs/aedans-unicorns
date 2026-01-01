@@ -14,6 +14,7 @@ import me.shedaniel.rei.plugin.common.BuiltinPlugin;
 import me.shedaniel.rei.plugin.common.displays.crafting.DefaultCustomShapedDisplay;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.potion.Potions;
 import net.minecraft.util.Identifier;
 import uk.mrinterbugs.unicorn.UnicornMod;
 import uk.mrinterbugs.unicorn.UnicornPotions;
@@ -79,7 +80,7 @@ public class UnicornReiPlugin implements REIClientPlugin {
      */
     private void registerCustomDisplays(DisplayRegistry registry) {
         registry.add(new UnicornBrewingDisplay(
-                EntryIngredients.ofItemStacks(java.util.List.of(UnicornPotions.createUnicornPotionStack(Items.POTION))),
+                EntryIngredients.ofItemStacks(java.util.List.of(UnicornPotions.createPotionStack(Items.POTION, Potions.AWKWARD))),
                 EntryIngredients.of(UnicornMod.UNICORN_HORN),
                 EntryStacks.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_POTION_ITEM))
         ));
@@ -97,7 +98,7 @@ public class UnicornReiPlugin implements REIClientPlugin {
         ));
 
         registry.add(new UnicornBrewingDisplay(
-                EntryIngredients.ofItemStacks(java.util.List.of(UnicornPotions.createUnicornPotionStack(Items.LINGERING_POTION))),
+                EntryIngredients.ofItemStacks(java.util.List.of(UnicornPotions.createPotionStack(Items.LINGERING_POTION, Potions.AWKWARD))),
                 EntryIngredients.of(UnicornMod.UNICORN_HORN),
                 EntryStacks.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_LINGERING_POTION_ITEM))
         ));
