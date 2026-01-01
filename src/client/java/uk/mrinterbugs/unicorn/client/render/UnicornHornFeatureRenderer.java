@@ -12,7 +12,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -21,7 +20,6 @@ import uk.mrinterbugs.unicorn.UnicornMod;
 
 @Environment(EnvType.CLIENT)
 public class UnicornHornFeatureRenderer<T extends AbstractHorseEntity> extends FeatureRenderer<T, HorseEntityModel<T>> {
-    private static final Identifier HORN_TEXTURE = Identifier.of(UnicornMod.MOD_ID, "textures/item/unicorn_horn.png");
     private final ItemRenderer itemRenderer;
 
     public UnicornHornFeatureRenderer(FeatureRendererContext<T, HorseEntityModel<T>> context) {
