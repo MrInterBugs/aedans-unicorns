@@ -12,3 +12,4 @@ classes/
 .idea/
 .DS_Store
 loom-debug.log
+.vscode/
