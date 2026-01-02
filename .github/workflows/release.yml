@@ -43,6 +43,6 @@ jobs:
           files: build/libs/aedans-unicorn-${{ github.ref_name }}.jar
           name: "Aedan's Unicorns ${{ github.ref_name }}"
           version: ${{ github.ref_name }}
-          changelog: "See GitHub for full changelog."
+          changelog: ${{ github.event.head_commit.message }}
           loaders: fabric
           game-versions: 1.21.1
