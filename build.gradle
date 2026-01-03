@@ -11,6 +11,7 @@ def minecraftVersion = providers.gradleProperty("minecraft_version").get()
 def reiVersion = providers.gradleProperty("rei_version").get()
 def lombokVersion = providers.gradleProperty("lombok_version").get()
 def archivesBaseName = providers.gradleProperty("archives_base_name").get()
+def yarnMappings = providers.gradleProperty("yarn_mappings").get()
 
 group = property('maven_group')
 version = modVersion
@@ -28,12 +29,11 @@ loom {
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraftVersion}"
-    mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
+    mappings "net.fabricmc:yarn:${yarnMappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
-    clientImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
-    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
+    modLocalRuntime "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }

@@ -2,6 +2,7 @@ package uk.mrinterbugs.unicorn;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Item;
@@ -11,7 +12,9 @@ import net.minecraft.item.LingeringPotionItem;
 import net.minecraft.item.PotionItem;
 import net.minecraft.item.SplashPotionItem;
 import net.minecraft.item.TippedArrowItem;
+import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -52,6 +55,15 @@ public class UnicornMod implements ModInitializer {
      */
     @Override
     public void onInitialize() {
+        FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {
+            builder.registerPotionRecipe(Potions.AWKWARD, UnicornMod.UNICORN_HORN, UnicornMod.UNICORN_HEART_POTION_ENTRY);
+            builder.registerPotionType(UNICORN_HEART_POTION_ITEM);
+            builder.registerPotionType(UNICORN_HEART_SPLASH_POTION_ITEM);
+            builder.registerPotionType(UNICORN_HEART_LINGERING_POTION_ITEM);
+            builder.registerItemRecipe(UNICORN_HEART_POTION_ITEM, Items.GUNPOWDER, UNICORN_HEART_SPLASH_POTION_ITEM);
+            builder.registerItemRecipe(UNICORN_HEART_SPLASH_POTION_ITEM, Items.DRAGON_BREATH, UNICORN_HEART_LINGERING_POTION_ITEM);
+        });
+
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(entries -> {
             entries.getDisplayStacks().removeIf(UnicornMod::isVanillaUnicornPotionStack);
             entries.add(UNICORN_HORN);
