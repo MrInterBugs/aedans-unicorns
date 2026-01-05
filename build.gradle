@@ -1,6 +1,7 @@
 plugins {
-    id 'fabric-loom' version "${loom_version}"
     id 'maven-publish'
+    id "com.github.ben-manes.versions" version "${versions_version}"
+    id 'fabric-loom' version "${loom_version}"
     id 'com.palantir.git-version' version "${git_version}"
 }
 
