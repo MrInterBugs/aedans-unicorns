@@ -21,6 +21,7 @@ repositories {
     mavenCentral()
     maven { url = "https://maven.fabricmc.net/" }
     maven { url = "https://maven.shedaniel.me/" }
+    maven { url = "https://api.modrinth.com/maven" }
 }
 
 loom {
@@ -34,6 +35,8 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
     clientImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
+    modCompileOnly "maven.modrinth:ryoamiclights:${ryoamiclights_version}"
+    modCompileOnly "maven.modrinth:obsidianui:${obsidianui_version}"
     modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"

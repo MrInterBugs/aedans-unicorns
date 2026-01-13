@@ -13,6 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import uk.mrinterbugs.unicorn.UnicornHornHolder;
@@ -62,7 +63,7 @@ public class UnicornHornFeatureRenderer<T extends AbstractHorseEntity> extends F
         matrices.translate(0.0F, -0.32F, 0.0F);
         matrices.scale(0.60F, 0.60F, 0.60F);
 
-        itemRenderer.renderItem(entity, hornStack, ModelTransformationMode.FIXED, false, matrices, vertexConsumers, entity.getWorld(), light, OverlayTexture.DEFAULT_UV, entity.getId());
+        itemRenderer.renderItem(entity, hornStack, ModelTransformationMode.FIXED, false, matrices, vertexConsumers, entity.getWorld(), LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, entity.getId());
         matrices.pop();
     }
 
