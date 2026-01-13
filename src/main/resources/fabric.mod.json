@@ -37,7 +37,7 @@
     "obsidianui": ">=${obsidianui_version}"
   },
   "suggests": {
-    "roughlyenoughitems": ">=${reiVersion}"
+    "roughlyenoughitems": ">=${rei_version}"
   },
   "custom": {
     "mc-publish": {
