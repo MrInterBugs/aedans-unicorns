@@ -31,5 +31,20 @@
     "fabric": ">=${fabric_version}",
     "minecraft": "${minecraft_version}",
     "java": ">=21"
+  },
+  "recommends": {
+    "ryoamiclights": ">=${ryoamiclights_version}",
+    "obsidianui": ">=${obsidianui_version}"
+  },
+  "suggests": {
+    "roughlyenoughitems": ">=${reiVersion}"
+  },
+  "custom": {
+    "mc-publish": {
+      "dependencies": [
+        "roughlyenoughitems{modrinth:rei}",
+        "fabric{modrinth:fabric-api}"
+      ]
+    }
   }
 }
