@@ -108,15 +108,21 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
     @Override
     public void unicorn$setHornStack(ItemStack stack) {
         AbstractHorseEntity self = (AbstractHorseEntity) (Object) this;
-        self.getDataTracker().set(unicorn$HORN_TRACKER, stack.copy());
+        
+        // Dirty-check: Only update if the item is different to save CPU/Bandwidth
+        if (!ItemStack.areEqual(self.getDataTracker().get(unicorn$HORN_TRACKER), stack)) {
+            self.getDataTracker().set(unicorn$HORN_TRACKER, stack.copy());
+        }
 
         int hornIndex = unicorn$getHornInventoryIndex();
-        if (hornIndex < 0) {
+        if (hornIndex < 0 || unicorn$syncingHorn) {
             return;
         }
         try {
             unicorn$syncingHorn = true;
-            items.setStack(hornIndex, stack);
+            if (!ItemStack.areEqual(items.getStack(hornIndex), stack)) {
+                items.setStack(hornIndex, stack.copy());
+            }
         } finally {
             unicorn$syncingHorn = false;
         }
@@ -127,28 +133,13 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
      */
     @Inject(method = "onInventoryChanged", at = @At("TAIL"))
     private void unicorn$syncHornTracker(Inventory inventory, CallbackInfo ci) {
-        if (unicorn$syncingHorn) {
-            return;
-        }
-        if (inventory != this.items) {
+        if (unicorn$syncingHorn || inventory != this.items) {
             return;
         }
         int hornIndex = unicorn$getHornInventoryIndex();
-        ItemStack inventoryStack = hornIndex >= 0 ? items.getStack(hornIndex) : ItemStack.EMPTY;
-        unicorn$setHornStack(inventoryStack);
-    }
-
-    /**
-     * Keeps the horn tracker aligned with the server-side inventory each tick.
-     */
-    @Inject(method = "tick", at = @At("TAIL"))
-    private void unicorn$ensureHornTrackerSync(CallbackInfo ci) {
-        AbstractHorseEntity self = (AbstractHorseEntity) (Object) this;
-        if (self.getWorld().isClient()) {
-            return;
+        if (hornIndex >= 0) {
+            ItemStack inventoryStack = items.getStack(hornIndex);
+            unicorn$setHornStack(inventoryStack);
         }
-        int hornIndex = unicorn$getHornInventoryIndex();
-        ItemStack inventoryStack = hornIndex >= 0 ? items.getStack(hornIndex) : ItemStack.EMPTY;
-        self.getDataTracker().set(unicorn$HORN_TRACKER, inventoryStack.copy());
     }
 }

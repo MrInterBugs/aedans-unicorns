@@ -35,6 +35,7 @@ public abstract class LivingEntityMixin {
 
             if (!hornStack.isEmpty() && hornStack.isOf(UnicornMod.UNICORN_HORN)) {
                 hornStack.decrement(1); 
+                hornHolder.unicorn$setHornStack(hornStack);
                 
                 entity.setHealth(1.0F);
                 entity.clearStatusEffects();
