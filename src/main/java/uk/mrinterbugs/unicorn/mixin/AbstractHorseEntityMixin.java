@@ -3,6 +3,7 @@ package uk.mrinterbugs.unicorn.mixin;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -13,8 +14,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import uk.mrinterbugs.unicorn.UnicornHornHolder;
 
 /**
@@ -50,6 +51,10 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
      */
     @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
     private void unicorn$saveHorn(NbtCompound nbt, CallbackInfo ci) {
+        if (unicorn$hasChest()) {
+            return;
+        }
+
         ItemStack horn = unicorn$getHornStack();
         if (!horn.isEmpty()) {
             AbstractHorseEntity self = (AbstractHorseEntity) (Object) this;
@@ -62,11 +67,30 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
      */
     @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
     private void unicorn$loadHorn(NbtCompound nbt, CallbackInfo ci) {
+        if (unicorn$hasChest()) {
+            int index = unicorn$getHornInventoryIndex();
+            if (index >= 0) {
+                unicorn$setHornStack(items.getStack(index));
+            }
+            return;
+        }
+
         if (nbt.contains("UnicornHornItem", NbtCompound.COMPOUND_TYPE)) {
             AbstractHorseEntity self = (AbstractHorseEntity) (Object) this;
             ItemStack.fromNbt(self.getRegistryManager(), nbt.getCompound("UnicornHornItem"))
                     .ifPresent(this::unicorn$setHornStack);
         }
+    }
+
+    /**
+     * Checks if the entity is a donkey with a chest to prevent duplication.
+     */
+    @Unique
+    private boolean unicorn$hasChest() {
+        if ((Object) this instanceof AbstractDonkeyEntity donkey) {
+            return donkey.hasChest();
+        }
+        return false;
     }
 
     /**
