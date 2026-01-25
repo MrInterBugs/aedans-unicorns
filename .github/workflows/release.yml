@@ -40,7 +40,7 @@ jobs:
         with:
           modrinth-id: gWWYaw4W
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          files: build/libs/aedans-unicorn-${{ github.ref_name }}.jar
+          files: build/libs/aedans-unicorn-!(*-sources).jar
           name: "Aedan's Unicorns ${{ github.ref_name }}"
           version: ${{ github.ref_name }}
           changelog: ${{ github.event.head_commit.message }}
