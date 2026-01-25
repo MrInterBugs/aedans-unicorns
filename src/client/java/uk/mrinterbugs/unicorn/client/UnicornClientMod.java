@@ -15,31 +15,39 @@ import uk.mrinterbugs.unicorn.client.render.UnicornHornFeatureRenderer;
 
 public class UnicornClientMod implements ClientModInitializer {
 
+    private static final int HORN_LIGHT_LEVEL = 13;
+    private static final int NO_LIGHT_LEVEL = 0;
+    private static final String RYOAMIC_LIGHTS_ID = "ryoamiclights";
+
     @Override
     public void onInitializeClient() {
-        LivingEntityFeatureRendererRegistrationCallback.EVENT.register((entityType, renderer, registrationHelper, context) -> {
-            if (!(renderer instanceof AbstractHorseEntityRenderer<?, ?> horseRenderer)) {
-                return;
-            }
-            @SuppressWarnings("unchecked")
-            FeatureRendererContext<AbstractHorseEntity, HorseEntityModel<AbstractHorseEntity>> ctx =
-                    (FeatureRendererContext<AbstractHorseEntity, HorseEntityModel<AbstractHorseEntity>>) (FeatureRendererContext<?, ?>) horseRenderer;
-            registrationHelper.register(new UnicornHornFeatureRenderer<>(ctx));
-        });
+        LivingEntityFeatureRendererRegistrationCallback.EVENT
+                .register((entityType, renderer, registrationHelper, context) -> {
+                    if (!(renderer instanceof AbstractHorseEntityRenderer<?, ?> horseRenderer)) {
+                        return;
+                    }
+                    @SuppressWarnings("unchecked")
+                    FeatureRendererContext<AbstractHorseEntity, HorseEntityModel<AbstractHorseEntity>> ctx = (FeatureRendererContext<AbstractHorseEntity, HorseEntityModel<AbstractHorseEntity>>) (FeatureRendererContext<?, ?>) horseRenderer;
+                    registrationHelper.register(new UnicornHornFeatureRenderer<>(ctx));
+                });
 
-        if (FabricLoader.getInstance().isModLoaded("ryoamiclights")) {
+        if (FabricLoader.getInstance().isModLoaded(RYOAMIC_LIGHTS_ID)) {
             registerDynamicLights();
         }
     }
 
+    /**
+     * Registers dynamic light emitting behavior for horses equipped with a unicorn
+     * horn when RyoamicLights is present.
+     */
     private void registerDynamicLights() {
         DynamicLightHandlers.registerDynamicLightHandler(EntityType.HORSE, (entity) -> {
             if (entity instanceof UnicornHornHolder hornHolder) {
                 if (hornHolder.unicorn$getHornStack().isOf(UnicornMod.UNICORN_HORN)) {
-                    return 13;
+                    return HORN_LIGHT_LEVEL;
                 }
             }
-            return 0;
+            return NO_LIGHT_LEVEL;
         });
     }
 }

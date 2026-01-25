@@ -22,16 +22,27 @@ import lombok.extern.slf4j.Slf4j;
 public class UnicornMod implements ModInitializer {
     public static final String MOD_ID = "unicorn";
 
-    public static final Item UNICORN_HORN = registerItem("unicorn_horn", new Item(new Item.Settings().maxCount(1)));
-    public static final Item UNICORN_HEART_POTION_ITEM = registerItem("unicorn_heart_potion_item", new PotionItem(new Item.Settings().maxCount(1)));
-    public static final Item UNICORN_HEART_SPLASH_POTION_ITEM = registerItem("unicorn_heart_splash_potion_item", new SplashPotionItem(new Item.Settings().maxCount(1)));
-    public static final Item UNICORN_HEART_LINGERING_POTION_ITEM = registerItem("unicorn_heart_lingering_potion_item", new LingeringPotionItem(new Item.Settings().maxCount(1)));
-    public static final Item UNICORN_HEART_TIPPED_ARROW = registerItem("unicorn_heart_tipped_arrow", new TippedArrowItem(new Item.Settings()));
+    private static final int HORN_MAX_COUNT = 1;
+    private static final int POTION_MAX_COUNT = 1;
+    private static final int POTION_DURATION_TICKS = 2400;
+    private static final int POTION_AMPLIFIER = 1;
+
+    public static final Item UNICORN_HORN = registerItem("unicorn_horn",
+            new Item(new Item.Settings().maxCount(HORN_MAX_COUNT)));
+    public static final Item UNICORN_HEART_POTION_ITEM = registerItem("unicorn_heart_potion_item",
+            new PotionItem(new Item.Settings().maxCount(POTION_MAX_COUNT)));
+    public static final Item UNICORN_HEART_SPLASH_POTION_ITEM = registerItem("unicorn_heart_splash_potion_item",
+            new SplashPotionItem(new Item.Settings().maxCount(POTION_MAX_COUNT)));
+    public static final Item UNICORN_HEART_LINGERING_POTION_ITEM = registerItem("unicorn_heart_lingering_potion_item",
+            new LingeringPotionItem(new Item.Settings().maxCount(POTION_MAX_COUNT)));
+    public static final Item UNICORN_HEART_TIPPED_ARROW = registerItem("unicorn_heart_tipped_arrow",
+            new TippedArrowItem(new Item.Settings()));
+
     public static final Potion UNICORN_HEART_POTION = registerPotion(
             "unicorn_heart_potion",
-            new Potion(new StatusEffectInstance(StatusEffects.ABSORPTION, 2400, 1))
-    );
-    public static final RegistryEntry<Potion> UNICORN_HEART_POTION_ENTRY = Registries.POTION.getEntry(UNICORN_HEART_POTION);
+            new Potion(new StatusEffectInstance(StatusEffects.ABSORPTION, POTION_DURATION_TICKS, POTION_AMPLIFIER)));
+    public static final RegistryEntry<Potion> UNICORN_HEART_POTION_ENTRY = Registries.POTION
+            .getEntry(UNICORN_HEART_POTION);
 
     /**
      * Registers an item under the mod namespace.
@@ -65,11 +76,13 @@ public class UnicornMod implements ModInitializer {
         });
 
         UnicornLootTables.register();
-        log.info("Unicorn mod loaded. Registered item: {} and potion: {}", Registries.ITEM.getId(UNICORN_HORN), Registries.POTION.getId(UNICORN_HEART_POTION));
+        log.info("Unicorn mod loaded. Registered item: {} and potion: {}", Registries.ITEM.getId(UNICORN_HORN),
+                Registries.POTION.getId(UNICORN_HEART_POTION));
     }
 
     /**
-     * Filters out vanilla-generated unicorn potion or tipped arrow stacks so only custom containers remain visible.
+     * Filters out vanilla-generated unicorn potion or tipped arrow stacks so only
+     * custom containers remain visible.
      */
     private static boolean isVanillaUnicornPotionStack(ItemStack stack) {
         if (!UnicornPotions.matchesUnicornPotion(stack)) {

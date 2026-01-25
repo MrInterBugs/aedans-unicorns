@@ -16,15 +16,32 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.Identifier;
+import org.spongepowered.asm.mixin.Unique;
 import uk.mrinterbugs.unicorn.UnicornMod;
 import uk.mrinterbugs.unicorn.UnicornPotions;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 /**
- * Hides vanilla brewing permutations that REI generates for unicorn potion containers.
- * Our items are only craftable via the custom recipes, not through potion mixing.
+ * Hides vanilla brewing permutations that REI generates for unicorn potion
+ * containers. Our items are only craftable via the custom recipes, not through
+ * potion mixing.
  */
 public class UnicornReiPlugin implements REIClientPlugin {
+
+    @Unique
     private static final CategoryIdentifier<?> BREWING = BuiltinPlugin.BREWING;
+
+    @Unique
+    private static final int CRAFTING_GRID_WIDTH = 3;
+    @Unique
+    private static final int CRAFTING_GRID_HEIGHT = 3;
+    @Unique
+    private static final int CRAFTING_GRID_SIZE = 9;
+    @Unique
+    private static final int CENTER_SLOT_INDEX = 4;
 
     /**
      * Registers visibility predicates and custom displays for unicorn brewing.
@@ -36,7 +53,8 @@ public class UnicornReiPlugin implements REIClientPlugin {
     }
 
     /**
-     * Hides default brewing displays that use unicorn potion contents to avoid misleading recipes.
+     * Hides default brewing displays that use unicorn potion contents to avoid
+     * misleading recipes.
      */
     private DisplayVisibilityPredicate hideUnicornBrewing() {
         return (category, display) -> {
@@ -76,58 +94,62 @@ public class UnicornReiPlugin implements REIClientPlugin {
     }
 
     /**
-     * Registers custom REI displays for unicorn brewing steps and the tipped arrow recipe.
+     * Registers custom REI displays for unicorn brewing steps and the tipped arrow
+     * recipe.
      */
     private void registerCustomDisplays(DisplayRegistry registry) {
         registry.add(new UnicornBrewingDisplay(
-                EntryIngredients.ofItemStacks(java.util.List.of(UnicornPotions.createPotionStack(Items.POTION, Potions.AWKWARD))),
+                EntryIngredients.ofItemStacks(List.of(UnicornPotions.createPotionStack(Items.POTION, Potions.AWKWARD))),
                 EntryIngredients.of(UnicornMod.UNICORN_HORN),
-                EntryStacks.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_POTION_ITEM))
-        ));
+                EntryStacks.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_POTION_ITEM))));
 
         registry.add(new UnicornBrewingDisplay(
-                EntryIngredients.ofItemStacks(java.util.List.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_POTION_ITEM))),
+                EntryIngredients.ofItemStacks(
+                        List.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_POTION_ITEM))),
                 EntryIngredients.of(Items.GUNPOWDER),
-                EntryStacks.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_SPLASH_POTION_ITEM))
-        ));
+                EntryStacks.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_SPLASH_POTION_ITEM))));
 
         registry.add(new UnicornBrewingDisplay(
-                EntryIngredients.ofItemStacks(java.util.List.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_SPLASH_POTION_ITEM))),
+                EntryIngredients.ofItemStacks(
+                        List.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_SPLASH_POTION_ITEM))),
                 EntryIngredients.of(Items.DRAGON_BREATH),
-                EntryStacks.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_LINGERING_POTION_ITEM))
-        ));
+                EntryStacks
+                        .of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_LINGERING_POTION_ITEM))));
 
         registry.add(new UnicornBrewingDisplay(
-                EntryIngredients.ofItemStacks(java.util.List.of(UnicornPotions.createPotionStack(Items.LINGERING_POTION, Potions.AWKWARD))),
+                EntryIngredients.ofItemStacks(
+                        List.of(UnicornPotions.createPotionStack(Items.LINGERING_POTION, Potions.AWKWARD))),
                 EntryIngredients.of(UnicornMod.UNICORN_HORN),
-                EntryStacks.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_LINGERING_POTION_ITEM))
-        ));
+                EntryStacks
+                        .of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_LINGERING_POTION_ITEM))));
 
         registry.add(DefaultCustomShapedDisplay.simple(
                 buildArrowInputs(),
-                java.util.List.of(EntryIngredients.ofItemStacks(java.util.List.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_TIPPED_ARROW)))),
-                3,
-                3,
-                java.util.Optional.of(Identifier.of(UnicornMod.MOD_ID, "unicorn_heart_tipped_arrow"))
-        ));
+                List.of(EntryIngredients.ofItemStacks(
+                        List.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_TIPPED_ARROW)))),
+                CRAFTING_GRID_WIDTH,
+                CRAFTING_GRID_HEIGHT,
+                Optional.of(Identifier.of(UnicornMod.MOD_ID, "unicorn_heart_tipped_arrow"))));
     }
 
     /**
      * Builds the shaped crafting inputs for the tipped arrow recipe.
      */
-    private java.util.List<EntryIngredient> buildArrowInputs() {
-        java.util.List<EntryIngredient> inputs = new java.util.ArrayList<>(9);
+    private List<EntryIngredient> buildArrowInputs() {
+        List<EntryIngredient> inputs = new ArrayList<>(CRAFTING_GRID_SIZE);
         EntryIngredient arrow = EntryIngredients.of(Items.ARROW);
-        for (int i = 0; i < 9; i++) {
-            inputs.add(i == 4
-                    ? EntryIngredients.ofItemStacks(java.util.List.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_LINGERING_POTION_ITEM)))
+        for (int i = 0; i < CRAFTING_GRID_SIZE; i++) {
+            inputs.add(i == CENTER_SLOT_INDEX
+                    ? EntryIngredients.ofItemStacks(List.of(
+                            UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_LINGERING_POTION_ITEM)))
                     : arrow);
         }
         return inputs;
     }
 
     /**
-     * Detects unicorn potion contents within entry ingredients regardless of container type.
+     * Detects unicorn potion contents within entry ingredients regardless of
+     * container type.
      */
     private boolean hasUnicornPotionContents(Iterable<EntryIngredient> ingredients) {
         for (EntryIngredient ingredient : ingredients) {
@@ -143,7 +165,8 @@ public class UnicornReiPlugin implements REIClientPlugin {
         return false;
     }
 
-    private static class UnicornBrewingDisplay extends me.shedaniel.rei.plugin.common.displays.brewing.DefaultBrewingDisplay {
+    private static class UnicornBrewingDisplay
+            extends me.shedaniel.rei.plugin.common.displays.brewing.DefaultBrewingDisplay {
         /**
          * Constructs a brewing display for unicorn-specific recipes.
          */

@@ -15,13 +15,16 @@ import uk.mrinterbugs.unicorn.client.render.UnicornHornFeatureRenderer;
 
 @Environment(EnvType.CLIENT)
 @Mixin(AbstractHorseEntityRenderer.class)
-public abstract class AbstractHorseEntityRendererMixin<T extends AbstractHorseEntity> extends MobEntityRenderer<T, HorseEntityModel<T>> {
-    protected AbstractHorseEntityRendererMixin(EntityRendererFactory.Context context, HorseEntityModel<T> model, float shadowRadius) {
+public abstract class AbstractHorseEntityRendererMixin<T extends AbstractHorseEntity>
+        extends MobEntityRenderer<T, HorseEntityModel<T>> {
+    protected AbstractHorseEntityRendererMixin(EntityRendererFactory.Context context, HorseEntityModel<T> model,
+            float shadowRadius) {
         super(context, model, shadowRadius);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void unicorn$addHornRenderer(EntityRendererFactory.Context ctx, HorseEntityModel<T> model, float scale, CallbackInfo ci) {
+    private void unicorn$addHornRenderer(EntityRendererFactory.Context ctx, HorseEntityModel<T> model, float scale,
+            CallbackInfo ci) {
         this.addFeature(new UnicornHornFeatureRenderer<>(this));
     }
 }

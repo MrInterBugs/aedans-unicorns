@@ -19,8 +19,19 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import uk.mrinterbugs.unicorn.UnicornHornHolder;
 import uk.mrinterbugs.unicorn.UnicornMod;
 
+/**
+ * Renders the unicorn horn item as a feature on the horse's head.
+ */
 @Environment(EnvType.CLIENT)
 public class UnicornHornFeatureRenderer<T extends AbstractHorseEntity> extends FeatureRenderer<T, HorseEntityModel<T>> {
+
+    private static final float HORN_TRANSLATE_X = 0.00F;
+    private static final float HORN_TRANSLATE_Y = -0.88F;
+    private static final float HORN_TRANSLATE_Z = 0.16F;
+
+    private static final float HORN_ROTATION_DEGREES = 180.0F;
+    private static final float HORN_SCALE = 0.60F;
+
     private final ItemRenderer itemRenderer;
 
     public UnicornHornFeatureRenderer(FeatureRendererContext<T, HorseEntityModel<T>> context) {
@@ -39,8 +50,7 @@ public class UnicornHornFeatureRenderer<T extends AbstractHorseEntity> extends F
             float tickDelta,
             float animationProgress,
             float headYaw,
-            float headPitch
-    ) {
+            float headPitch) {
         if (!(entity instanceof UnicornHornHolder hornHolder)) {
             return;
         }
@@ -56,15 +66,31 @@ public class UnicornHornFeatureRenderer<T extends AbstractHorseEntity> extends F
         }
 
         matrices.push();
-        head.rotate(matrices);
-        matrices.translate(0.00F, -0.88F, 0.16F);
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
-        matrices.scale(0.60F, 0.60F, 0.60F);
 
-        itemRenderer.renderItem(entity, hornStack, ModelTransformationMode.FIXED, false, matrices, vertexConsumers, entity.getWorld(), LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, entity.getId());
+        head.rotate(matrices);
+
+        matrices.translate(HORN_TRANSLATE_X, HORN_TRANSLATE_Y, HORN_TRANSLATE_Z);
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(HORN_ROTATION_DEGREES));
+        matrices.scale(HORN_SCALE, HORN_SCALE, HORN_SCALE);
+
+        itemRenderer.renderItem(
+                entity,
+                hornStack,
+                ModelTransformationMode.FIXED,
+                false,
+                matrices,
+                vertexConsumers,
+                entity.getWorld(),
+                LightmapTextureManager.MAX_LIGHT_COORDINATE,
+                OverlayTexture.DEFAULT_UV,
+                entity.getId());
+
         matrices.pop();
     }
 
+    /**
+     * Retrieves the first head part from the horse model for positioning.
+     */
     private ModelPart getHeadPart() {
         for (ModelPart part : this.getContextModel().getHeadParts()) {
             return part;

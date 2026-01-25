@@ -20,19 +20,20 @@ public class UnicornPotions {
             Items.POTION, UnicornMod.UNICORN_HEART_POTION_ITEM,
             Items.SPLASH_POTION, UnicornMod.UNICORN_HEART_SPLASH_POTION_ITEM,
             Items.LINGERING_POTION, UnicornMod.UNICORN_HEART_LINGERING_POTION_ITEM,
-            Items.TIPPED_ARROW, UnicornMod.UNICORN_HEART_TIPPED_ARROW
-    );
+            Items.TIPPED_ARROW, UnicornMod.UNICORN_HEART_TIPPED_ARROW);
     public static final Set<Item> UNICORN_POTION_ITEMS = Set.copyOf(UNICORN_CONTAINER_SWAP.values());
 
     /**
-     * Builds a potion stack with unicorn heart contents for the given container item.
+     * Builds a potion stack with unicorn heart contents for the given container
+     * item.
      */
     public ItemStack createUnicornPotionStack(Item baseItem) {
         return PotionContentsComponent.createStack(baseItem, UnicornMod.UNICORN_HEART_POTION_ENTRY);
     }
 
     /**
-     * Builds a potion stack with the given potion entry for the given container item.
+     * Builds a potion stack with the given potion entry for the given container
+     * item.
      */
     public ItemStack createPotionStack(Item baseItem, RegistryEntry<Potion> potion) {
         return PotionContentsComponent.createStack(baseItem, potion);
@@ -42,7 +43,8 @@ public class UnicornPotions {
      * Determines whether a stack carries the unicorn heart potion contents.
      */
     public boolean matchesUnicornPotion(ItemStack stack) {
-        PotionContentsComponent contents = stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
+        PotionContentsComponent contents = stack.getOrDefault(DataComponentTypes.POTION_CONTENTS,
+                PotionContentsComponent.DEFAULT);
         return contents.matches(UnicornMod.UNICORN_HEART_POTION_ENTRY);
     }
 

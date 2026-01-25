@@ -9,6 +9,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -19,14 +20,30 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import uk.mrinterbugs.unicorn.UnicornHornHolder;
 
 /**
- * Adds a unicorn horn slot to horse inventories and keeps horn state synced between server and client.
+ * Adds a unicorn horn slot to horse inventories and keeps horn state synced
+ * between server and client.
  */
 @Mixin(AbstractHorseEntity.class)
 public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
     @Unique
-    private static final TrackedData<ItemStack> unicorn$HORN_TRACKER = DataTracker.registerData(AbstractHorseEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+    private static final TrackedData<ItemStack> unicorn$HORN_TRACKER = DataTracker
+            .registerData(AbstractHorseEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
-    @Shadow protected SimpleInventory items;
+    @Unique
+    private static final String HORN_NBT_KEY = "UnicornHornItem";
+
+    @Unique
+    private static final int ADDITIONAL_SLOT_COUNT = 1;
+
+    @Unique
+    private static final int INVALID_SLOT_INDEX = -1;
+
+    @Unique
+    private static final int EMPTY_INVENTORY_SIZE = 0;
+
+    @Shadow
+    protected SimpleInventory items;
+
     @Unique
     private boolean unicorn$syncingHorn;
 
@@ -35,7 +52,7 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
      */
     @Inject(method = "getInventorySize(I)I", at = @At("RETURN"), cancellable = true)
     private static void unicorn$addHornSlot(int inventoryColumns, CallbackInfoReturnable<Integer> cir) {
-        cir.setReturnValue(cir.getReturnValueI() + 1);
+        cir.setReturnValue(cir.getReturnValueI() + ADDITIONAL_SLOT_COUNT);
     }
 
     /**
@@ -58,7 +75,7 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
         ItemStack horn = unicorn$getHornStack();
         if (!horn.isEmpty()) {
             AbstractHorseEntity self = (AbstractHorseEntity) (Object) this;
-            nbt.put("UnicornHornItem", horn.encode(self.getRegistryManager()));
+            nbt.put(HORN_NBT_KEY, horn.encode(self.getRegistryManager()));
         }
     }
 
@@ -69,15 +86,15 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
     private void unicorn$loadHorn(NbtCompound nbt, CallbackInfo ci) {
         if (unicorn$hasChest()) {
             int index = unicorn$getHornInventoryIndex();
-            if (index >= 0) {
+            if (index != INVALID_SLOT_INDEX) {
                 unicorn$setHornStack(items.getStack(index));
             }
             return;
         }
 
-        if (nbt.contains("UnicornHornItem", NbtCompound.COMPOUND_TYPE)) {
+        if (nbt.contains(HORN_NBT_KEY, NbtElement.COMPOUND_TYPE)) {
             AbstractHorseEntity self = (AbstractHorseEntity) (Object) this;
-            ItemStack.fromNbt(self.getRegistryManager(), nbt.getCompound("UnicornHornItem"))
+            ItemStack.fromNbt(self.getRegistryManager(), nbt.getCompound(HORN_NBT_KEY))
                     .ifPresent(this::unicorn$setHornStack);
         }
     }
@@ -98,14 +115,15 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
      */
     @Unique
     private int unicorn$getHornInventoryIndex() {
-        if (items == null || items.size() == 0) {
-            return -1;
+        if (items == null || items.size() == EMPTY_INVENTORY_SIZE) {
+            return INVALID_SLOT_INDEX;
         }
-        return items.size() - 1;
+        return items.size() - ADDITIONAL_SLOT_COUNT;
     }
 
     /**
-     * Returns the horn stack, preferring tracked data on the client where the inventory can be stale.
+     * Returns the horn stack, preferring tracked data on the client where the
+     * inventory can be stale.
      */
     @Override
     public ItemStack unicorn$getHornStack() {
@@ -116,7 +134,7 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
         }
 
         int hornIndex = unicorn$getHornInventoryIndex();
-        if (hornIndex < 0) {
+        if (hornIndex == INVALID_SLOT_INDEX) {
             return ItemStack.EMPTY;
         }
         ItemStack inventoryStack = items.getStack(hornIndex);
@@ -127,18 +145,19 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
     }
 
     /**
-     * Updates the horn stack, syncing both tracker data and the backing inventory slot.
+     * Updates the horn stack, syncing both tracker data and the backing inventory
+     * slot.
      */
     @Override
     public void unicorn$setHornStack(ItemStack stack) {
         AbstractHorseEntity self = (AbstractHorseEntity) (Object) this;
-        
+
         if (!ItemStack.areEqual(self.getDataTracker().get(unicorn$HORN_TRACKER), stack)) {
             self.getDataTracker().set(unicorn$HORN_TRACKER, stack.copy());
         }
 
         int hornIndex = unicorn$getHornInventoryIndex();
-        if (hornIndex < 0 || unicorn$syncingHorn) {
+        if (hornIndex == INVALID_SLOT_INDEX || unicorn$syncingHorn) {
             return;
         }
         try {
@@ -160,7 +179,7 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
             return;
         }
         int hornIndex = unicorn$getHornInventoryIndex();
-        if (hornIndex >= 0) {
+        if (hornIndex != INVALID_SLOT_INDEX) {
             ItemStack inventoryStack = items.getStack(hornIndex);
             unicorn$setHornStack(inventoryStack);
         }

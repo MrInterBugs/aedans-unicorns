@@ -9,6 +9,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -21,12 +22,33 @@ import uk.mrinterbugs.unicorn.UnicornHornHolder;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
 
+    @Unique
+    private static final int HORN_DECREMENT_AMOUNT = 1;
+    @Unique
+    private static final float POST_TOTEM_HEALTH = 1.0F;
+
+    @Unique
+    private static final int REGEN_DURATION = 900;
+    @Unique
+    private static final int REGEN_AMPLIFIER = 1;
+
+    @Unique
+    private static final int ABSORPTION_DURATION = 100;
+    @Unique
+    private static final int ABSORPTION_AMPLIFIER = 1;
+
+    @Unique
+    private static final int FIRE_RES_DURATION = 800;
+    @Unique
+    private static final int FIRE_RES_AMPLIFIER = 0;
+
     /**
      * Consumes a slotted unicorn horn as a totem when a horse would die.
      */
     @Inject(method = "tryUseTotem", at = @At("HEAD"), cancellable = true)
     private void unicorn$tryHornTotem(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
-        if (source.isOf(DamageTypes.OUT_OF_WORLD)) return;
+        if (source.isOf(DamageTypes.OUT_OF_WORLD))
+            return;
 
         LivingEntity entity = (LivingEntity) (Object) this;
 
@@ -34,18 +56,21 @@ public abstract class LivingEntityMixin {
             ItemStack hornStack = hornHolder.unicorn$getHornStack();
 
             if (!hornStack.isEmpty() && hornStack.isOf(UnicornMod.UNICORN_HORN)) {
-                hornStack.decrement(1); 
+                hornStack.decrement(HORN_DECREMENT_AMOUNT);
                 hornHolder.unicorn$setHornStack(hornStack);
-                
-                entity.setHealth(1.0F);
+
+                entity.setHealth(POST_TOTEM_HEALTH);
                 entity.clearStatusEffects();
-                
-                entity.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 900, 1));
-                entity.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1));
-                entity.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 800, 0));
+
+                entity.addStatusEffect(
+                        new StatusEffectInstance(StatusEffects.REGENERATION, REGEN_DURATION, REGEN_AMPLIFIER));
+                entity.addStatusEffect(
+                        new StatusEffectInstance(StatusEffects.ABSORPTION, ABSORPTION_DURATION, ABSORPTION_AMPLIFIER));
+                entity.addStatusEffect(
+                        new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, FIRE_RES_DURATION, FIRE_RES_AMPLIFIER));
 
                 entity.getWorld().sendEntityStatus(entity, EntityStatuses.USE_TOTEM_OF_UNDYING);
-                
+
                 cir.setReturnValue(true);
             }
         }

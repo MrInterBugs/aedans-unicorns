@@ -10,6 +10,7 @@ public interface UnicornHornHolder {
      * Retrieves the held unicorn horn stack.
      */
     ItemStack unicorn$getHornStack();
+
     /**
      * Sets the held unicorn horn stack.
      */
