@@ -41,12 +41,12 @@ public class UnicornClientMod implements ClientModInitializer {
      * horn when RyoamicLights is present.
      */
     private void registerDynamicLights() {
-        DynamicLightHandlers.registerDynamicLightHandler(EntityType.HORSE, (entity) -> {
-            if (entity instanceof UnicornHornHolder hornHolder) {
-                if (hornHolder.unicorn$getHornStack().isOf(UnicornMod.UNICORN_HORN)) {
-                    return HORN_LIGHT_LEVEL;
-                }
+        DynamicLightHandlers.registerDynamicLightHandler(EntityType.HORSE, entity -> {
+            if (entity instanceof UnicornHornHolder hornHolder
+                    && hornHolder.unicorn$getHornStack().isOf(UnicornMod.UNICORN_HORN)) {
+                return HORN_LIGHT_LEVEL;
             }
+
             return NO_LIGHT_LEVEL;
         });
     }

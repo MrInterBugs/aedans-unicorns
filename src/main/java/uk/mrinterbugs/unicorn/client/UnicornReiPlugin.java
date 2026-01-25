@@ -155,10 +155,8 @@ public class UnicornReiPlugin implements REIClientPlugin {
         for (EntryIngredient ingredient : ingredients) {
             for (EntryStack<?> stack : ingredient) {
                 Object value = stack.getValue();
-                if (value instanceof ItemStack itemStack) {
-                    if (UnicornPotions.matchesUnicornPotion(itemStack)) {
-                        return true;
-                    }
+                if (value instanceof ItemStack itemStack && UnicornPotions.matchesUnicornPotion(itemStack)) {
+                    return true;
                 }
             }
         }

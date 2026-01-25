@@ -92,9 +92,7 @@ public class UnicornHornFeatureRenderer<T extends AbstractHorseEntity> extends F
      * Retrieves the first head part from the horse model for positioning.
      */
     private ModelPart getHeadPart() {
-        for (ModelPart part : this.getContextModel().getHeadParts()) {
-            return part;
-        }
-        return null;
+        Iterable<ModelPart> headParts = this.getContextModel().getHeadParts();
+        return headParts.iterator().hasNext() ? headParts.iterator().next() : null;
     }
 }

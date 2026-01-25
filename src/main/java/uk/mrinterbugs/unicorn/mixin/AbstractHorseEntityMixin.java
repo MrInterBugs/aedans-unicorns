@@ -104,7 +104,7 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
      */
     @Unique
     private boolean unicorn$hasChest() {
-        if ((Object) this instanceof AbstractDonkeyEntity donkey) {
+        if ((AbstractHorseEntity) (Object) this instanceof AbstractDonkeyEntity donkey) {
             return donkey.hasChest();
         }
         return false;
