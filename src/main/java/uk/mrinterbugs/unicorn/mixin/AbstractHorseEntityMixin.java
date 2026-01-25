@@ -109,7 +109,6 @@ public abstract class AbstractHorseEntityMixin implements UnicornHornHolder {
     public void unicorn$setHornStack(ItemStack stack) {
         AbstractHorseEntity self = (AbstractHorseEntity) (Object) this;
         
-        // Dirty-check: Only update if the item is different to save CPU/Bandwidth
         if (!ItemStack.areEqual(self.getDataTracker().get(unicorn$HORN_TRACKER), stack)) {
             self.getDataTracker().set(unicorn$HORN_TRACKER, stack.copy());
         }
