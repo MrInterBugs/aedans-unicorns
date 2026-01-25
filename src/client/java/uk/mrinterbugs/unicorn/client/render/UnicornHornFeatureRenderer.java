@@ -57,10 +57,8 @@ public class UnicornHornFeatureRenderer<T extends AbstractHorseEntity> extends F
 
         matrices.push();
         head.rotate(matrices);
-        matrices.translate(0.00F, -1.2F, 0.16F);
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
-        matrices.translate(0.0F, -0.32F, 0.0F);
+        matrices.translate(0.00F, -0.88F, 0.16F);
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
         matrices.scale(0.60F, 0.60F, 0.60F);
 
         itemRenderer.renderItem(entity, hornStack, ModelTransformationMode.FIXED, false, matrices, vertexConsumers, entity.getWorld(), LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, entity.getId());
