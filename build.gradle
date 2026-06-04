@@ -1,7 +1,7 @@
 plugins {
     id 'maven-publish'
     id "com.github.ben-manes.versions" version "${versions_version}"
-    id 'fabric-loom' version "${loom_version}"
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'com.palantir.git-version' version "${git_version}"
 }
 
@@ -29,18 +29,24 @@ repositories {
 
 loom {
     splitEnvironmentSourceSets()
+
+    mods {
+        "unicorn" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraftVersion}"
-    mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
-    clientImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
-    modCompileOnly "maven.modrinth:ryoamiclights:${ryoamiclights_version}"
-    modCompileOnly "maven.modrinth:obsidianui:${obsidianui_version}"
-    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
+    implementation "net.fabricmc:fabric-loader:${loaderVersion}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
+    // Optional deps — awaiting 26.1.2 releases before re-enabling
+    // compileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
+    // compileOnly "maven.modrinth:ryoamiclights:${ryoamiclights_version}"
+    // compileOnly "maven.modrinth:obsidianui:${obsidianui_version}"
+    // runtimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
@@ -64,12 +70,12 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    options.release = 21
+    options.release = 25
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
     withSourcesJar()
 }
 

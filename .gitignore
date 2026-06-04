@@ -5,6 +5,7 @@ gradle-[0-9]*/
 build/
 run/
 out/
+bin/
 classes/
 *.log
 *.tmp
