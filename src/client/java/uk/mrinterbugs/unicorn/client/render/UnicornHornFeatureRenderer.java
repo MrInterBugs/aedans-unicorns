@@ -20,8 +20,8 @@ public class UnicornHornFeatureRenderer<S extends EquineRenderState, M extends A
         extends RenderLayer<S, M> {
 
     private static final float HORN_TRANSLATE_X = 0.00F;
-    private static final float HORN_TRANSLATE_Y = -0.88F;
-    private static final float HORN_TRANSLATE_Z = 0.16F;
+    private static final float HORN_TRANSLATE_Y = -0.98F;
+    private static final float HORN_TRANSLATE_Z = -0.12F;
     private static final float HORN_ROTATION_DEGREES = 180.0F;
     private static final float HORN_SCALE = 0.60F;
 
@@ -45,7 +45,7 @@ public class UnicornHornFeatureRenderer<S extends EquineRenderState, M extends A
         poseStack.mulPose(Axis.ZP.rotationDegrees(HORN_ROTATION_DEGREES));
         poseStack.scale(HORN_SCALE, HORN_SCALE, HORN_SCALE);
 
-        hornRenderState.submit(poseStack, collector, packedLight, OverlayTexture.NO_OVERLAY, 0);
+        hornRenderState.submit(poseStack, collector, net.minecraft.util.LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
 
         poseStack.popPose();
     }

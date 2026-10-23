@@ -4,7 +4,9 @@
   "version": "${version}",
   "name": "Aedans Unicorns",
   "description": "Adds a shiny new unicorn horn to your world to save your horses from an untimely demise.",
-  "authors": ["MrInterBugs"],
+  "authors": [
+    "MrInterBugs"
+  ],
   "contact": {
     "homepage": "https://modrinth.com/mod/aedans-unicorns",
     "sources": "https://github.com/mrinterbugs/unicorn/source"
@@ -15,9 +17,6 @@
   "entrypoints": {
     "main": [
       "uk.mrinterbugs.unicorn.UnicornMod"
-    ],
-    "rei_client": [
-      "uk.mrinterbugs.unicorn.client.UnicornReiPlugin"
     ],
     "client": [
       "uk.mrinterbugs.unicorn.client.UnicornClientMod"
@@ -36,15 +35,13 @@
     "java": ">=25"
   },
   "recommends": {
-    "ryoamiclights": ">=${ryoamiclights_version}",
-    "obsidianui": ">=${obsidianui_version}",
-    "roughlyenoughitems": ">=${rei_version}"
+    "jei": ">=${jei_version}"
   },
   "custom": {
     "mc-publish": {
       "dependencies": [
-        "roughlyenoughitems(recommended){modrinth:rei}",
-        "fabric{modrinth:fabric-api}"
+        "jei(recommended){modrinth:jei}",
+        "fabric-api{modrinth:fabric-api}"
       ]
     }
   }

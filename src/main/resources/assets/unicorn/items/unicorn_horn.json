@@ -1,6 +1,31 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "unicorn:item/unicorn_horn"
+    "type": "minecraft:select",
+    "property": "minecraft:display_context",
+    "cases": [
+      {
+        "when": "fixed",
+        "model": {
+          "type": "minecraft:model",
+          "model": "unicorn:item/unicorn_horn_equipped"
+        }
+      },
+      {
+        "when": [
+          "firstperson_righthand",
+          "firstperson_lefthand",
+          "thirdperson_righthand",
+          "thirdperson_lefthand"
+        ],
+        "model": {
+          "type": "minecraft:model",
+          "model": "unicorn:item/unicorn_horn_held"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "unicorn:item/unicorn_horn"
+    }
   }
 }

@@ -10,9 +10,7 @@ def modVersion = rawVersion.startsWith("v") ? rawVersion.substring(1) : rawVersi
 def loaderVersion = providers.gradleProperty("loader_version").get()
 def fabricVersion = providers.gradleProperty("fabric_version").get()
 def minecraftVersion = providers.gradleProperty("minecraft_version").get()
-def reiVersion = providers.gradleProperty("rei_version").get()
-def ryoamiclightsVersion = providers.gradleProperty("ryoamiclights_version").get()
-def obsidianuiVersion = providers.gradleProperty("obsidianui_version").get()
+def jeiVersion = providers.gradleProperty("jei_version").get()
 def lombokVersion = providers.gradleProperty("lombok_version").get()
 def archivesBaseName = providers.gradleProperty("archives_base_name").get()
 
@@ -23,7 +21,7 @@ base.archivesName = archivesBaseName
 repositories {
     mavenCentral()
     maven { url = "https://maven.fabricmc.net/" }
-    maven { url = "https://maven.shedaniel.me/" }
+    maven { url = "https://maven.blamejared.com/" }
     maven { url = "https://api.modrinth.com/maven" }
 }
 
@@ -42,12 +40,8 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraftVersion}"
     implementation "net.fabricmc:fabric-loader:${loaderVersion}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
-    // Optional deps — awaiting 26.1.2 releases before re-enabling
-    // compileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
-    // compileOnly "maven.modrinth:ryoamiclights:${ryoamiclights_version}"
-    // compileOnly "maven.modrinth:obsidianui:${obsidianui_version}"
-    // runtimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
-    compileOnly files("C:/Users/aedan/AppData/Roaming/PrismLauncher/instances/26.1.2/minecraft/mods/jei-26.1.2-fabric-29.6.2.31.jar")
+    clientCompileOnly "mezz.jei:jei-${minecraftVersion}-fabric-api:${jeiVersion}"
+    clientRuntimeOnly "mezz.jei:jei-${minecraftVersion}-fabric:${jeiVersion}"
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
@@ -60,9 +54,7 @@ processResources {
             loader_version: loaderVersion,
             fabric_version: fabricVersion,
             minecraft_version: minecraftVersion,
-            ryoamiclights_version: ryoamiclightsVersion,
-            obsidianui_version: obsidianuiVersion,
-            rei_version: reiVersion
+            jei_version: jeiVersion
     ]
     filesMatching("fabric.mod.json") {
         expand(expandProps)
@@ -94,5 +86,23 @@ publishing {
     }
     repositories {
         mavenLocal()
+    }
+}
+
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = 'unicorn-gametest'
+        enableClientGameTests = false
+    }
+}
+
+loom.runs.gameTest {
+    vmArg "-Dfabric-api.gametest.report-file=${layout.buildDirectory.file('reports/gametest/results.xml').get().asFile}"
+}
+
+tasks.named('runGameTest') {
+    doFirst {
+        layout.buildDirectory.dir('reports/gametest').get().asFile.mkdirs()
     }
 }

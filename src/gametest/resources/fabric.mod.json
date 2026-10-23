@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "unicorn-gametest",
+  "version": "1.0.0",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": ["uk.mrinterbugs.unicorn.UnicornGameTests"]
+  }
+}

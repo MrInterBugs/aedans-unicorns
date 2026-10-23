@@ -17,7 +17,7 @@ public class UnicornClientMod implements ClientModInitializer {
                 registerHornLayer(renderer, helper);
             }
         });
-        // RyoamicLights integration disabled — awaiting release for MC 26.1.2
+        // Optional dynamic-light integration is not enabled in this port.
     }
 
     @SuppressWarnings("unchecked")
