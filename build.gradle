@@ -29,6 +29,12 @@ repositories {
 
 loom {
     splitEnvironmentSourceSets()
+    mods {
+        "unicorn" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
 }
 
 dependencies {
@@ -36,7 +42,6 @@ dependencies {
     mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
-    clientImplementation "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
     modCompileOnly "maven.modrinth:ryoamiclights:${ryoamiclights_version}"
     modCompileOnly "maven.modrinth:obsidianui:${obsidianui_version}"
@@ -88,4 +93,18 @@ publishing {
     repositories {
         mavenLocal()
     }
+}
+
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = 'unicorn-gametest'
+        enableClientGameTests = false
+    }
+}
+loom.runs.gameTest {
+    vmArg "-Dfabric-api.gametest.report-file=${layout.buildDirectory.file('reports/gametest/results.xml').get().asFile}"
+}
+tasks.named('runGameTest') {
+    doFirst { layout.buildDirectory.dir('reports/gametest').get().asFile.mkdirs() }
 }

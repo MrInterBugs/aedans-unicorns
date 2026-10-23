@@ -11,7 +11,6 @@ import me.shedaniel.rei.api.common.entry.EntryStack;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import me.shedaniel.rei.plugin.common.BuiltinPlugin;
-import me.shedaniel.rei.plugin.common.displays.crafting.DefaultCustomShapedDisplay;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potions;
@@ -20,28 +19,16 @@ import org.spongepowered.asm.mixin.Unique;
 import uk.mrinterbugs.unicorn.UnicornMod;
 import uk.mrinterbugs.unicorn.UnicornPotions;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Hides vanilla brewing permutations that REI generates for unicorn potion
- * containers. Our items are only craftable via the custom recipes, not through
- * potion mixing.
+ * containers. Potions are brewed; tipped arrows use the real crafting recipe.
  */
 public class UnicornReiPlugin implements REIClientPlugin {
 
     @Unique
     private static final CategoryIdentifier<?> BREWING = BuiltinPlugin.BREWING;
-
-    @Unique
-    private static final int CRAFTING_GRID_WIDTH = 3;
-    @Unique
-    private static final int CRAFTING_GRID_HEIGHT = 3;
-    @Unique
-    private static final int CRAFTING_GRID_SIZE = 9;
-    @Unique
-    private static final int CENTER_SLOT_INDEX = 4;
 
     /**
      * Registers visibility predicates and custom displays for unicorn brewing.
@@ -104,6 +91,11 @@ public class UnicornReiPlugin implements REIClientPlugin {
                 EntryStacks.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_POTION_ITEM))));
 
         registry.add(new UnicornBrewingDisplay(
+                EntryIngredients.ofItemStacks(List.of(UnicornPotions.createPotionStack(Items.SPLASH_POTION, Potions.AWKWARD))),
+                EntryIngredients.of(UnicornMod.UNICORN_HORN),
+                EntryStacks.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_SPLASH_POTION_ITEM))));
+
+        registry.add(new UnicornBrewingDisplay(
                 EntryIngredients.ofItemStacks(
                         List.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_POTION_ITEM))),
                 EntryIngredients.of(Items.GUNPOWDER),
@@ -123,28 +115,6 @@ public class UnicornReiPlugin implements REIClientPlugin {
                 EntryStacks
                         .of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_LINGERING_POTION_ITEM))));
 
-        registry.add(DefaultCustomShapedDisplay.simple(
-                buildArrowInputs(),
-                List.of(EntryIngredients.ofItemStacks(
-                        List.of(UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_TIPPED_ARROW)))),
-                CRAFTING_GRID_WIDTH,
-                CRAFTING_GRID_HEIGHT,
-                Optional.of(Identifier.of(UnicornMod.MOD_ID, "unicorn_heart_tipped_arrow"))));
-    }
-
-    /**
-     * Builds the shaped crafting inputs for the tipped arrow recipe.
-     */
-    private List<EntryIngredient> buildArrowInputs() {
-        List<EntryIngredient> inputs = new ArrayList<>(CRAFTING_GRID_SIZE);
-        EntryIngredient arrow = EntryIngredients.of(Items.ARROW);
-        for (int i = 0; i < CRAFTING_GRID_SIZE; i++) {
-            inputs.add(i == CENTER_SLOT_INDEX
-                    ? EntryIngredients.ofItemStacks(List.of(
-                            UnicornPotions.createUnicornPotionStack(UnicornMod.UNICORN_HEART_LINGERING_POTION_ITEM)))
-                    : arrow);
-        }
-        return inputs;
     }
 
     /**

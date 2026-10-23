@@ -2,5 +2,13 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "unicorn:item/unicorn_horn"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1
+      },
+      "model": "unicorn:item/unicorn_horn_equipped"
+    }
+  ]
 }

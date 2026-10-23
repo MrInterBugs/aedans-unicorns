@@ -63,13 +63,15 @@ public class UnicornMod implements ModInitializer {
      */
     @Override
     public void onInitialize() {
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(entries -> {
+        ItemGroupEvents.MODIFY_ENTRIES_ALL.register((group, entries) -> {
             entries.getDisplayStacks().removeIf(UnicornMod::isVanillaUnicornPotionStack);
+            entries.getSearchTabStacks().removeIf(UnicornMod::isVanillaUnicornPotionStack);
+        });
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(entries -> {
             entries.add(UNICORN_HORN);
             entries.add(UnicornPotions.createUnicornPotionStack(UNICORN_HEART_TIPPED_ARROW));
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register(entries -> {
-            entries.getDisplayStacks().removeIf(UnicornMod::isVanillaUnicornPotionStack);
             entries.add(UnicornPotions.createUnicornPotionStack(UNICORN_HEART_POTION_ITEM));
             entries.add(UnicornPotions.createUnicornPotionStack(UNICORN_HEART_SPLASH_POTION_ITEM));
             entries.add(UnicornPotions.createUnicornPotionStack(UNICORN_HEART_LINGERING_POTION_ITEM));
@@ -89,6 +91,6 @@ public class UnicornMod implements ModInitializer {
             return false;
         }
 
-        return Identifier.DEFAULT_NAMESPACE.equals(Registries.ITEM.getId(stack.getItem()).getNamespace());
+        return UnicornPotions.UNICORN_CONTAINER_SWAP.containsKey(stack.getItem());
     }
 }

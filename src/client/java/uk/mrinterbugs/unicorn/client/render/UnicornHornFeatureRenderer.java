@@ -26,8 +26,8 @@ import uk.mrinterbugs.unicorn.UnicornMod;
 public class UnicornHornFeatureRenderer<T extends AbstractHorseEntity> extends FeatureRenderer<T, HorseEntityModel<T>> {
 
     private static final float HORN_TRANSLATE_X = 0.00F;
-    private static final float HORN_TRANSLATE_Y = -0.88F;
-    private static final float HORN_TRANSLATE_Z = 0.16F;
+    private static final float HORN_TRANSLATE_Y = -0.98F;
+    private static final float HORN_TRANSLATE_Z = -0.12F;
 
     private static final float HORN_ROTATION_DEGREES = 180.0F;
     private static final float HORN_SCALE = 0.60F;
@@ -73,9 +73,12 @@ public class UnicornHornFeatureRenderer<T extends AbstractHorseEntity> extends F
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(HORN_ROTATION_DEGREES));
         matrices.scale(HORN_SCALE, HORN_SCALE, HORN_SCALE);
 
+        ItemStack equippedModel = hornStack.copy();
+        equippedModel.set(net.minecraft.component.DataComponentTypes.CUSTOM_MODEL_DATA,
+                new net.minecraft.component.type.CustomModelDataComponent(1));
         itemRenderer.renderItem(
                 entity,
-                hornStack,
+                equippedModel,
                 ModelTransformationMode.FIXED,
                 false,
                 matrices,

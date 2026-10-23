@@ -3,7 +3,7 @@ package uk.mrinterbugs.unicorn.mixin;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.AbstractHorseEntity;
@@ -47,7 +47,7 @@ public abstract class LivingEntityMixin {
      */
     @Inject(method = "tryUseTotem", at = @At("HEAD"), cancellable = true)
     private void unicorn$tryHornTotem(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
-        if (source.isOf(DamageTypes.OUT_OF_WORLD))
+        if (source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY))
             return;
 
         LivingEntity entity = (LivingEntity) (Object) this;

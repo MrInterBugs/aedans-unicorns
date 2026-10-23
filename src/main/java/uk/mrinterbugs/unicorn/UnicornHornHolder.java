@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
  * Accessors for entities that can hold a unicorn horn item.
  */
 public interface UnicornHornHolder {
+    net.minecraft.inventory.Inventory unicorn$getHornInventory();
     /**
      * Retrieves the held unicorn horn stack.
      */

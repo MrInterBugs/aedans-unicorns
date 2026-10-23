@@ -29,10 +29,10 @@ public abstract class HorseScreenMixin extends HandledScreen<HorseScreenHandler>
     private static final int SLOT_SIZE = 18;
 
     @Unique
-    private static final int HORN_SLOT_X_OFFSET = 25;
+    private static final int HORN_SLOT_X_OFFSET = 7;
 
     @Unique
-    private static final int HORN_SLOT_Y_OFFSET = 17;
+    private static final int HORN_SLOT_Y_OFFSET = 53;
 
     protected HorseScreenMixin(HorseScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
