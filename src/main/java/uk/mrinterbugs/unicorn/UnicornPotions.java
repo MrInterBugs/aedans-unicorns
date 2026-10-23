@@ -3,17 +3,14 @@ package uk.mrinterbugs.unicorn;
 import java.util.Map;
 import java.util.Set;
 import lombok.experimental.UtilityClass;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.PotionContentsComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.potion.Potion;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
 
-/**
- * Helpers and constants for unicorn potion items and contents.
- */
 @UtilityClass
 public class UnicornPotions {
     public static final Map<Item, Item> UNICORN_CONTAINER_SWAP = Map.of(
@@ -23,34 +20,19 @@ public class UnicornPotions {
             Items.TIPPED_ARROW, UnicornMod.UNICORN_HEART_TIPPED_ARROW);
     public static final Set<Item> UNICORN_POTION_ITEMS = Set.copyOf(UNICORN_CONTAINER_SWAP.values());
 
-    /**
-     * Builds a potion stack with unicorn heart contents for the given container
-     * item.
-     */
     public ItemStack createUnicornPotionStack(Item baseItem) {
-        return PotionContentsComponent.createStack(baseItem, UnicornMod.UNICORN_HEART_POTION_ENTRY);
+        return PotionContents.createItemStack(baseItem, UnicornMod.UNICORN_HEART_POTION_ENTRY);
     }
 
-    /**
-     * Builds a potion stack with the given potion entry for the given container
-     * item.
-     */
-    public ItemStack createPotionStack(Item baseItem, RegistryEntry<Potion> potion) {
-        return PotionContentsComponent.createStack(baseItem, potion);
+    public ItemStack createPotionStack(Item baseItem, Holder<Potion> potion) {
+        return PotionContents.createItemStack(baseItem, potion);
     }
 
-    /**
-     * Determines whether a stack carries the unicorn heart potion contents.
-     */
     public boolean matchesUnicornPotion(ItemStack stack) {
-        PotionContentsComponent contents = stack.getOrDefault(DataComponentTypes.POTION_CONTENTS,
-                PotionContentsComponent.DEFAULT);
-        return contents.matches(UnicornMod.UNICORN_HEART_POTION_ENTRY);
+        PotionContents contents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+        return contents.is(UnicornMod.UNICORN_HEART_POTION_ENTRY);
     }
 
-    /**
-     * Checks if an item is one of the unicorn potion containers.
-     */
     public boolean isUnicornPotionItem(Item item) {
         return UNICORN_POTION_ITEMS.contains(item);
     }

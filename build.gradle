@@ -47,6 +47,7 @@ dependencies {
     // compileOnly "maven.modrinth:ryoamiclights:${ryoamiclights_version}"
     // compileOnly "maven.modrinth:obsidianui:${obsidianui_version}"
     // runtimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${reiVersion}"
+    compileOnly files("C:/Users/aedan/AppData/Roaming/PrismLauncher/instances/26.1.2/minecraft/mods/jei-26.1.2-fabric-29.6.2.31.jar")
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }

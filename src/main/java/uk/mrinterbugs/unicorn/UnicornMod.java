@@ -1,21 +1,24 @@
 package uk.mrinterbugs.unicorn;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.LingeringPotionItem;
-import net.minecraft.item.PotionItem;
-import net.minecraft.item.SplashPotionItem;
-import net.minecraft.item.TippedArrowItem;
-import net.minecraft.potion.Potion;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.LingeringPotionItem;
+import net.minecraft.world.item.PotionItem;
+import net.minecraft.world.item.SplashPotionItem;
+import net.minecraft.world.item.TippedArrowItem;
+import net.minecraft.world.item.alchemy.Potion;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,68 +30,67 @@ public class UnicornMod implements ModInitializer {
     private static final int POTION_DURATION_TICKS = 2400;
     private static final int POTION_AMPLIFIER = 1;
 
+    private static final ResourceKey<CreativeModeTab> COMBAT_TAB =
+            ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.withDefaultNamespace("combat"));
+    private static final ResourceKey<CreativeModeTab> FOOD_AND_DRINK_TAB =
+            ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.withDefaultNamespace("food_and_drink"));
+
     public static final Item UNICORN_HORN = registerItem("unicorn_horn",
-            new Item(new Item.Settings().maxCount(HORN_MAX_COUNT)));
+            props -> new Item(props.stacksTo(HORN_MAX_COUNT)));
     public static final Item UNICORN_HEART_POTION_ITEM = registerItem("unicorn_heart_potion_item",
-            new PotionItem(new Item.Settings().maxCount(POTION_MAX_COUNT)));
+            props -> new PotionItem(props.stacksTo(POTION_MAX_COUNT)));
     public static final Item UNICORN_HEART_SPLASH_POTION_ITEM = registerItem("unicorn_heart_splash_potion_item",
-            new SplashPotionItem(new Item.Settings().maxCount(POTION_MAX_COUNT)));
+            props -> new SplashPotionItem(props.stacksTo(POTION_MAX_COUNT)));
     public static final Item UNICORN_HEART_LINGERING_POTION_ITEM = registerItem("unicorn_heart_lingering_potion_item",
-            new LingeringPotionItem(new Item.Settings().maxCount(POTION_MAX_COUNT)));
+            props -> new LingeringPotionItem(props.stacksTo(POTION_MAX_COUNT)));
     public static final Item UNICORN_HEART_TIPPED_ARROW = registerItem("unicorn_heart_tipped_arrow",
-            new TippedArrowItem(new Item.Settings()));
+            props -> new TippedArrowItem(props));
 
     public static final Potion UNICORN_HEART_POTION = registerPotion(
             "unicorn_heart_potion",
-            new Potion(new StatusEffectInstance(StatusEffects.ABSORPTION, POTION_DURATION_TICKS, POTION_AMPLIFIER)));
-    public static final RegistryEntry<Potion> UNICORN_HEART_POTION_ENTRY = Registries.POTION
-            .getEntry(UNICORN_HEART_POTION);
+            new Potion("unicorn_heart_potion", new MobEffectInstance(MobEffects.ABSORPTION, POTION_DURATION_TICKS, POTION_AMPLIFIER)));
+    public static final Holder<Potion> UNICORN_HEART_POTION_ENTRY = BuiltInRegistries.POTION
+            .wrapAsHolder(UNICORN_HEART_POTION);
 
-    /**
-     * Registers an item under the mod namespace.
-     */
-    private static Item registerItem(String name, Item item) {
-        return Registry.register(Registries.ITEM, Identifier.of(MOD_ID, name), item);
+    private static Item registerItem(String name, Function<Item.Properties, Item> factory) {
+        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        Item item = factory.apply(new Item.Properties().setId(key));
+        return Registry.register(BuiltInRegistries.ITEM, key, item);
     }
 
-    /**
-     * Registers a potion under the mod namespace.
-     */
     private static Potion registerPotion(String name, Potion potion) {
-        return Registry.register(Registries.POTION, Identifier.of(MOD_ID, name), potion);
+        return Registry.register(BuiltInRegistries.POTION, Identifier.fromNamespaceAndPath(MOD_ID, name), potion);
     }
 
-    /**
-     * Registers items, potions, and item group entries during mod initialization.
-     */
     @Override
     public void onInitialize() {
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(entries -> {
+        CreativeModeTabEvents.modifyOutputEvent(COMBAT_TAB).register(entries -> {
             entries.getDisplayStacks().removeIf(UnicornMod::isVanillaUnicornPotionStack);
-            entries.add(UNICORN_HORN);
-            entries.add(UnicornPotions.createUnicornPotionStack(UNICORN_HEART_TIPPED_ARROW));
+            entries.accept(new ItemStack(UNICORN_HORN), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            entries.accept(UnicornPotions.createUnicornPotionStack(UNICORN_HEART_TIPPED_ARROW),
+                    CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         });
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register(entries -> {
+        CreativeModeTabEvents.modifyOutputEvent(FOOD_AND_DRINK_TAB).register(entries -> {
             entries.getDisplayStacks().removeIf(UnicornMod::isVanillaUnicornPotionStack);
-            entries.add(UnicornPotions.createUnicornPotionStack(UNICORN_HEART_POTION_ITEM));
-            entries.add(UnicornPotions.createUnicornPotionStack(UNICORN_HEART_SPLASH_POTION_ITEM));
-            entries.add(UnicornPotions.createUnicornPotionStack(UNICORN_HEART_LINGERING_POTION_ITEM));
+            entries.accept(UnicornPotions.createUnicornPotionStack(UNICORN_HEART_POTION_ITEM),
+                    CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            entries.accept(UnicornPotions.createUnicornPotionStack(UNICORN_HEART_SPLASH_POTION_ITEM),
+                    CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            entries.accept(UnicornPotions.createUnicornPotionStack(UNICORN_HEART_LINGERING_POTION_ITEM),
+                    CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         });
 
         UnicornLootTables.register();
-        log.info("Unicorn mod loaded. Registered item: {} and potion: {}", Registries.ITEM.getId(UNICORN_HORN),
-                Registries.POTION.getId(UNICORN_HEART_POTION));
+        log.info("Unicorn mod loaded. Registered item: {} and potion: {}",
+                BuiltInRegistries.ITEM.getKey(UNICORN_HORN),
+                BuiltInRegistries.POTION.getKey(UNICORN_HEART_POTION));
     }
 
-    /**
-     * Filters out vanilla-generated unicorn potion or tipped arrow stacks so only
-     * custom containers remain visible.
-     */
     private static boolean isVanillaUnicornPotionStack(ItemStack stack) {
         if (!UnicornPotions.matchesUnicornPotion(stack)) {
             return false;
         }
-
-        return Identifier.DEFAULT_NAMESPACE.equals(Registries.ITEM.getId(stack.getItem()).getNamespace());
+        Identifier key = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        return Identifier.DEFAULT_NAMESPACE.equals(key.getNamespace());
     }
 }

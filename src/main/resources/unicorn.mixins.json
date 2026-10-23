@@ -1,15 +1,21 @@
 {
   "required": true,
   "package": "uk.mrinterbugs.unicorn.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "mixins": [
     "AbstractHorseEntityMixin",
+    "AbstractHorseInventoryAccessor",
+    "AbstractMountInventoryMenuAccessor",
+    "AbstractMountInventoryMenuMixin",
     "BrewingRecipeRegistryMixin",
     "LivingEntityMixin",
     "HorseScreenHandlerMixin"
   ],
   "client": [
-    "HorseScreenMixin"
+    "AbstractEquineModelAccessor",
+    "EquineRenderStateMixin",
+    "client.AbstractHorseEntityRendererMixin",
+    "client.LivingEntityRendererAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

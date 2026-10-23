@@ -21,6 +21,9 @@
     ],
     "client": [
       "uk.mrinterbugs.unicorn.client.UnicornClientMod"
+    ],
+    "jei_mod_plugin": [
+      "uk.mrinterbugs.unicorn.client.UnicornJeiPlugin"
     ]
   },
   "mixins": [
@@ -28,7 +31,7 @@
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": ">=${fabric_version}",
+    "fabric-api": ">=${fabric_version}",
     "minecraft": "${minecraft_version}",
     "java": ">=25"
   },

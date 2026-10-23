@@ -2,29 +2,35 @@ package uk.mrinterbugs.unicorn.mixin.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.AbstractHorseEntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.model.HorseEntityModel;
-import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.client.renderer.entity.AbstractHorseRenderer;
+import net.minecraft.client.renderer.entity.state.EquineRenderState;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import uk.mrinterbugs.unicorn.client.render.UnicornHornFeatureRenderer;
+import uk.mrinterbugs.unicorn.UnicornEquineState;
+import uk.mrinterbugs.unicorn.UnicornHornHolder;
+import uk.mrinterbugs.unicorn.UnicornMod;
 
 @Environment(EnvType.CLIENT)
-@Mixin(AbstractHorseEntityRenderer.class)
-public abstract class AbstractHorseEntityRendererMixin<T extends AbstractHorseEntity>
-        extends MobEntityRenderer<T, HorseEntityModel<T>> {
-    protected AbstractHorseEntityRendererMixin(EntityRendererFactory.Context context, HorseEntityModel<T> model,
-            float shadowRadius) {
-        super(context, model, shadowRadius);
-    }
+@Mixin(AbstractHorseRenderer.class)
+public abstract class AbstractHorseEntityRendererMixin {
 
-    @Inject(method = "<init>", at = @At("TAIL"))
-    private void unicorn$addHornRenderer(EntityRendererFactory.Context ctx, HorseEntityModel<T> model, float scale,
-            CallbackInfo ci) {
-        this.addFeature(new UnicornHornFeatureRenderer<>(this));
+    @Inject(method = "extractRenderState(Lnet/minecraft/world/entity/animal/equine/AbstractHorse;Lnet/minecraft/client/renderer/entity/state/EquineRenderState;F)V",
+            at = @At("TAIL"))
+    private void unicorn$extractHornState(AbstractHorse entity, EquineRenderState state, float partialTick, CallbackInfo ci) {
+        if (!(state instanceof UnicornEquineState unicornState)) return;
+        if (!(entity instanceof UnicornHornHolder hornHolder)) return;
+
+        ItemStack hornStack = hornHolder.unicorn$getHornStack();
+        unicornState.unicorn$getHornItem().clear();
+
+        if (!hornStack.isEmpty() && hornStack.getItem() == UnicornMod.UNICORN_HORN) {
+            ((LivingEntityRendererAccessor) this).getItemModelResolver().updateForLiving(
+                    unicornState.unicorn$getHornItem(), hornStack, ItemDisplayContext.FIXED, entity);
+        }
     }
 }
