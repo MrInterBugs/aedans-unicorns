@@ -7,7 +7,7 @@ A Fabric 26.1.2 mod that gives horses a dedicated **Unicorn Horn** slot, lets th
 - **Unicorn Horn**: rare loot in bastions, nether fortresses, smith/village chests, desert pyramids, dungeons, end/ancient cities, and woodland mansions. Lives in the Combat tab.
 - **Horse horn slot**: appears under the armor slot. Shift-click a horn to equip; it renders on the horse’s head.
 - **Totem effect for horses**: a slotted horn saves the horse from death, clearing effects and granting Regeneration, Absorption, and Fire Resistance.
-- **Potion of Unicorn Vitality** (Absorption II for 2:00): brew Awkward + Unicorn Horn. Convert to splash (Gunpowder), lingering (Dragon’s Breath or Awkward Lingering + Horn), and tipped arrows (lingering potion + arrows for 8). Custom containers show in Food & Drink; vanilla potion variants are hidden.
+- **Potion of Unicorn Vitality** (Absorption II for 2:00): brew Awkward + Unicorn Horn in a brewing stand. Convert to splash (Gunpowder), lingering (Dragon’s Breath or Awkward Lingering + Horn). Craft 8 tipped arrows using a lingering potion surrounded by arrows. Custom containers show in Food & Drink; vanilla potion variants are hidden.
 - **JEI integration**: shows the custom brewing recipes; optional at runtime.
 
 ## Building
