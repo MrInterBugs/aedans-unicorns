@@ -26,12 +26,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UnicornGameTests implements FabricGameTest {
+    private static int slotOf(HorseScreenHandler menu, Inventory inventory, int index) {
+        for (int i = 0; i < menu.slots.size(); i++) {
+            var slot = menu.slots.get(i);
+            if (slot.inventory == inventory && slot.getIndex() == index) return i;
+        }
+        throw new AssertionError("Inventory slot not found");
+    }
+
     private static void equip(AbstractHorseEntity horse) {
         ((UnicornHornHolder) horse).unicorn$setHornStack(new ItemStack(UnicornMod.UNICORN_HORN));
     }
 
     private static Inventory cargo(AbstractHorseEntity horse) {
-        return ((AbstractHorseInventoryAccessor) horse).getInventory();
+        return ((AbstractHorseInventoryAccessor) horse).unicorn$getHorseInventory();
     }
 
     private static void resize(AbstractHorseEntity horse) throws Exception {
@@ -125,12 +133,13 @@ public class UnicornGameTests implements FabricGameTest {
         var player = h.createMockPlayer(GameMode.SURVIVAL);
         var menu = new HorseScreenHandler(1, player.getInventory(), cargo(horse), horse, 0);
         player.getInventory().setStack(9, new ItemStack(UnicornMod.UNICORN_HORN));
-        menu.quickMove(player, menu.slots.size() - 1 - 36);
+        menu.quickMove(player, slotOf(menu, player.getInventory(), 9));
         h.assertTrue(horn(horse).isOf(UnicornMod.UNICORN_HORN), "Shift-click failed to equip horn");
         for (int i = 0; i < 36; i++)
             player.getInventory().setStack(i, new ItemStack(Items.DIRT, 64));
         player.getInventory().setStack(9, ItemStack.EMPTY);
-        menu.quickMove(player, menu.slots.size() - 1);
+        menu.quickMove(
+                player, slotOf(menu, ((UnicornHornHolder) horse).unicorn$getHornInventory(), 0));
         h.assertTrue(horn(horse).isEmpty(), "Shift-click failed to remove horn");
         h.assertTrue(
                 player.getInventory().getStack(9).isOf(UnicornMod.UNICORN_HORN),
@@ -144,10 +153,111 @@ public class UnicornGameTests implements FabricGameTest {
         var player = h.createMockPlayer(GameMode.SURVIVAL);
         var menu = new HorseScreenHandler(1, player.getInventory(), cargo(horse), horse, 0);
         player.getInventory().setStack(10, new ItemStack(Items.DIRT));
-        menu.quickMove(player, menu.slots.size() - 1 - 36 + 1);
+        menu.quickMove(player, slotOf(menu, player.getInventory(), 10));
         boolean moved = false;
         for (int i = 0; i < 9; i++) moved |= player.getInventory().getStack(i).isOf(Items.DIRT);
         h.assertTrue(moved, "Ordinary shift-click did not move to hotbar");
+        h.complete();
+    }
+
+    @GameTest(templateName = EMPTY_STRUCTURE)
+    public void equipmentSlotsDoNotOverlap(TestContext h) throws Exception {
+        var player = h.createMockPlayer(GameMode.SURVIVAL);
+        var horse = h.spawnEntity(EntityType.HORSE, 1, 2, 1);
+        var donkey = h.spawnEntity(EntityType.DONKEY, 2, 2, 1);
+        donkey.setHasChest(true);
+        resize(donkey);
+        for (var mount : List.of(horse, donkey)) {
+            var menu =
+                    new HorseScreenHandler(
+                            1,
+                            player.getInventory(),
+                            cargo(mount),
+                            mount,
+                            mount.getInventoryColumns());
+            var hornSlot =
+                    menu.slots.get(
+                            slotOf(
+                                    menu,
+                                    ((UnicornHornHolder) mount).unicorn$getHornInventory(),
+                                    0));
+            h.assertTrue(
+                    hornSlot.x == 26 && hornSlot.y == 18, "Horn moved into another equipment slot");
+            for (int i = 0; i < menu.slots.size(); i++) {
+                for (int j = i + 1; j < menu.slots.size(); j++) {
+                    var a = menu.slots.get(i);
+                    var b = menu.slots.get(j);
+                    h.assertTrue(
+                            Math.abs(a.x - b.x) >= 18 || Math.abs(a.y - b.y) >= 18,
+                            "Overlapping slots " + i + " and " + j);
+                }
+            }
+        }
+        h.complete();
+    }
+
+    @GameTest(templateName = EMPTY_STRUCTURE)
+    public void horseshoesAndHornTransferIndependently(TestContext h) throws Exception {
+        if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("horseshoes")) {
+            h.complete();
+            return;
+        }
+        var shoes =
+                Registries.ITEM.get(
+                        net.minecraft.util.Identifier.of("horseshoes", "iron_horseshoes"));
+        h.assertTrue(shoes != Items.AIR, "Horseshoes integration item missing");
+        var horse = h.spawnEntity(EntityType.HORSE, 1, 2, 1);
+        var donkey = h.spawnEntity(EntityType.DONKEY, 2, 2, 1);
+        donkey.setHasChest(true);
+        resize(donkey);
+        for (var mount : List.of(horse, donkey)) {
+            var player = h.createMockPlayer(GameMode.SURVIVAL);
+            var menu =
+                    new HorseScreenHandler(
+                            1,
+                            player.getInventory(),
+                            cargo(mount),
+                            mount,
+                            mount.getInventoryColumns());
+            Inventory hornInventory = ((UnicornHornHolder) mount).unicorn$getHornInventory();
+            int hornSlot = slotOf(menu, hornInventory, 0);
+            int shoeSlot = -1;
+            for (int i = 0; i < menu.slots.size(); i++) {
+                var slot = menu.slots.get(i);
+                if (slot.inventory != player.getInventory()
+                        && slot.inventory != cargo(mount)
+                        && slot.inventory != hornInventory
+                        && slot.canInsert(new ItemStack(shoes))) shoeSlot = i;
+            }
+            h.assertTrue(shoeSlot >= 0, "Horseshoe slot missing");
+            player.getInventory().setStack(9, new ItemStack(UnicornMod.UNICORN_HORN));
+            menu.quickMove(player, slotOf(menu, player.getInventory(), 9));
+            h.assertTrue(
+                    horn(mount).isOf(UnicornMod.UNICORN_HORN),
+                    "Horn did not equip alongside Horseshoes");
+            player.getInventory().setStack(9, new ItemStack(shoes));
+            menu.quickMove(player, slotOf(menu, player.getInventory(), 9));
+            h.assertTrue(
+                    menu.slots.get(shoeSlot).getStack().isOf(shoes),
+                    "Horseshoes went into cargo instead of equipment");
+            h.assertTrue(
+                    horn(mount).isOf(UnicornMod.UNICORN_HORN), "Equipping shoes displaced horn");
+            menu.quickMove(player, shoeSlot);
+            h.assertTrue(
+                    !menu.slots.get(shoeSlot).hasStack(), "Shift-click did not remove horseshoes");
+            h.assertTrue(
+                    horn(mount).isOf(UnicornMod.UNICORN_HORN), "Removing shoes displaced horn");
+            menu.quickMove(player, hornSlot);
+            h.assertTrue(horn(mount).isEmpty(), "Shift-click did not remove horn");
+            int hornCount = 0;
+            int shoeCount = 0;
+            for (int i = 0; i < 36; i++) {
+                var stack = player.getInventory().getStack(i);
+                if (stack.isOf(UnicornMod.UNICORN_HORN)) hornCount += stack.getCount();
+                if (stack.isOf(shoes)) shoeCount += stack.getCount();
+            }
+            h.assertTrue(hornCount == 1 && shoeCount == 1, "Transfer lost or duplicated equipment");
+        }
         h.complete();
     }
 

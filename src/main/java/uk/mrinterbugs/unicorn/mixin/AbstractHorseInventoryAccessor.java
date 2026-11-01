@@ -9,5 +9,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(AbstractHorseEntity.class)
 public interface AbstractHorseInventoryAccessor {
     @Accessor("items")
-    SimpleInventory getInventory();
+    SimpleInventory unicorn$getHorseInventory();
 }

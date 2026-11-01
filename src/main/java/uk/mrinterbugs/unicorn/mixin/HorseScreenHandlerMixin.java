@@ -28,19 +28,21 @@ import uk.mrinterbugs.unicorn.UnicornHornHolder;
 import uk.mrinterbugs.unicorn.UnicornMod;
 
 /** Adds a unicorn horn slot to horse screens and handles quick-move logic for horns. */
-@Mixin(HorseScreenHandler.class)
+// Handle transfers before equipment mods with fixed slot-index assumptions.
+@Mixin(value = HorseScreenHandler.class, priority = 900)
 public abstract class HorseScreenHandlerMixin extends ScreenHandler {
-    @Unique private static final int HORN_SLOT_X = 8;
-    @Unique private static final int HORN_SLOT_Y = 54;
+    @Unique private static final int HORN_SLOT_X = 26;
+    @Unique private static final int HORN_SLOT_Y = 18;
     @Unique private static final int MAX_HORN_COUNT = 1;
     @Shadow @Final private AbstractHorseEntity entity;
+    @Shadow @Final private Inventory inventory;
 
     /** Base constructor passthrough for mixin extension. */
     protected HorseScreenHandlerMixin(@Nullable ScreenHandlerType<?> type, int syncId) {
         super(type, syncId);
     }
 
-    /** Places the unicorn horn slot under the armor slot so it remains grouped with equipment. */
+    /** Places the horn beside the saddle, leaving the lower equipment slot to other mods. */
     @Inject(method = "<init>", at = @At("TAIL"))
     private void unicorn$addHornSlot(
             int syncId,
@@ -78,35 +80,55 @@ public abstract class HorseScreenHandlerMixin extends ScreenHandler {
     @Inject(method = "quickMove", at = @At("HEAD"), cancellable = true)
     private void unicorn$quickMove(
             PlayerEntity player, int index, CallbackInfoReturnable<ItemStack> cir) {
-        UnicornHornHolder holder = (UnicornHornHolder) this.entity;
-        int hornSlot = this.slots.size() - 1;
-        if (hornSlot < 36
-                || this.slots.get(hornSlot).inventory != holder.unicorn$getHornInventory()) return;
+        Inventory hornInventory = ((UnicornHornHolder) this.entity).unicorn$getHornInventory();
+        int hornSlot = -1;
+        int playerStart = -1;
+        int playerEnd = -1;
+        for (int i = 0; i < this.slots.size(); i++) {
+            Slot slot = this.slots.get(i);
+            if (slot.inventory == hornInventory) hornSlot = i;
+            if (slot.inventory == player.getInventory()) {
+                if (playerStart < 0) playerStart = i;
+                playerEnd = i + 1;
+            }
+        }
+        if (hornSlot < 0 || playerStart < 0) return;
 
-        // The horn is appended after the 36 player slots, outside vanilla's ranges.
-        int playerStart = hornSlot - 36;
+        // Equipment mods can append slots before or after ours. Identify inventories,
+        // rather than treating the last slot as the horn or as a player-slot boundary.
         cir.setReturnValue(ItemStack.EMPTY);
         if (index < 0 || index >= this.slots.size()) return;
         Slot from = this.slots.get(index);
         if (!from.hasStack() || !from.canTakeItems(player)) return;
         ItemStack stack = from.getStack();
         ItemStack original = stack.copy();
-        boolean moved;
-        if (index == hornSlot || index < playerStart) {
-            moved = this.insertItem(stack, playerStart, hornSlot, true);
-        } else if (stack.isOf(UnicornMod.UNICORN_HORN) && !this.slots.get(hornSlot).hasStack()) {
-            moved = this.insertItem(stack, hornSlot, hornSlot + 1, false);
-        } else if (this.slots.get(1).canInsert(stack) && !this.slots.get(1).hasStack()) {
-            moved = this.insertItem(stack, 1, 2, false);
-        } else if (this.slots.get(0).canInsert(stack) && !this.slots.get(0).hasStack()) {
-            moved = this.insertItem(stack, 0, 1, false);
+        boolean moved = false;
+        if (from.inventory != player.getInventory()) {
+            moved = this.insertItem(stack, playerStart, playerEnd, true);
         } else {
-            moved = playerStart > 2 && this.insertItem(stack, 2, playerStart, false);
+            // Try the horn and all other equipment before general donkey/mule cargo.
+            if (stack.isOf(UnicornMod.UNICORN_HORN)) {
+                moved = this.insertItem(stack, hornSlot, hornSlot + 1, false);
+            }
             if (!moved) {
-                int hotbarStart = playerStart + 27;
+                for (int i = 0; i < this.slots.size(); i++) {
+                    Slot target = this.slots.get(i);
+                    if (i == hornSlot || target.inventory == player.getInventory()) continue;
+                    if (i >= 2 && target.inventory == this.inventory) continue;
+                    if (target.canInsert(stack) && this.insertItem(stack, i, i + 1, false)) {
+                        moved = true;
+                        break;
+                    }
+                }
+            }
+            if (!moved && playerStart > 2) {
+                moved = this.insertItem(stack, 2, playerStart, false);
+            }
+            if (!moved) {
+                int hotbarStart = playerEnd - 9;
                 moved =
                         index < hotbarStart
-                                ? this.insertItem(stack, hotbarStart, hornSlot, false)
+                                ? this.insertItem(stack, hotbarStart, playerEnd, false)
                                 : this.insertItem(stack, playerStart, hotbarStart, false);
             }
         }

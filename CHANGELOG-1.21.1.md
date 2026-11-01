@@ -1,4 +1,13 @@
-# 1.21.1 backport of the 26.1.2 fixes
+# Minecraft 1.21.1 changelog
+
+## 1.2.4 — Horseshoes compatibility
+
+- Fix the horn and Horseshoes equipment slots drawing on top of each other.
+- Fix shift-click transfers for horns, horseshoes, and chested-donkey cargo.
+- Fix the inventory accessor conflict with Horseshoes, including legacy-save migration.
+- Run all 16 GameTests both with and without Horseshoes 1.3.3 before publishing.
+
+## 1.2.3 — Backported fixes
 
 Based on `origin/1.21.1` (`74277a7`), in branch `MrInterBugs/backport-1.21.1`.
 
@@ -25,6 +34,25 @@ The release workflow already selects Java 21 and Minecraft 1.21.1 and retains th
 
 ## Validation
 
-`./gradlew build` compiles the common/client code, packages remapped release/source jars, and runs 14 Minecraft GameTests on Java 21. Tests cover lethal damage, immediate removal, chest attachment, horse/donkey saves, old chest-slot migration, horn and ordinary shift-clicking, brewing, rejection of crafting-table potion conversions, eight-arrow crafting, drinking/bottle returns, `/kill`/death drops, creative-search duplicates, and item translation keys.
+`./gradlew build` compiles the common/client code, packages remapped release/source jars, and runs 16 Minecraft GameTests on Java 21. Tests cover lethal damage, immediate removal, chest attachment, horse/donkey saves, old chest-slot migration, horn and ordinary shift-clicking, brewing, rejection of crafting-table potion conversions, eight-arrow crafting, drinking/bottle returns, `/kill`/death drops, creative-search duplicates, and item translation keys.
 
-The report is `build/reports/gametest/results.xml`; logs are in `build/run/gameTest/logs/`. Client rendering has been compiled against 1.21.1 but has not been interactively checked in a 1.21.1 Prism instance. The existing 26.1.2 test installation is unaffected by the backport.
+The report is `build/reports/gametest/results.xml`; logs are in `build/run/gameTest/logs/`. The integration suite also runs against the actual Horseshoes 1.3.3 mod; the minimal Prism 1.21.1 test instance includes both mods. The existing 26.1.2 test installation is unaffected by the backport.
+
+## Horseshoes compatibility follow-up
+
+- Restore the horn slot to `(26, 18)` beside the saddle; Horseshoes keeps its
+  `(8, 54)` slot. Move the client background with the horn's actual slot.
+- Identify the horn and player slots by their inventory, instead of assuming the
+  horn is last. Handle all equipment slots before cargo when shift-clicking,
+  including Horseshoes on chested donkeys. Run this handler before Horseshoes'
+  fixed-index quick-move handler.
+- Namespace the native-horse inventory accessor to avoid colliding with
+  Horseshoes' own `getInventory()` method. This also preserves legacy chest-slot
+  migration while both mods are loaded.
+- Add regression checks for non-overlapping horse/donkey slots and independent
+  horn/horseshoe transfers without loss or duplication. CI runs with and without
+  Horseshoes 1.3.3; release builds require both configurations to pass.
+
+Run the integration checks with
+`./gradlew build runGameTest -PtestHorseshoes=true`. The optional dependency is
+only added to the development runtime; it is not bundled or required by the mod.

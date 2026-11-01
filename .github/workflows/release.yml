@@ -41,6 +41,8 @@ jobs:
           cache: gradle
       - name: Build and run GameTests
         run: ./gradlew clean build runGameTest --console=plain
+      - name: Test with Horseshoes 1.3.3
+        run: ./gradlew runGameTest -PtestHorseshoes=true --console=plain
       - name: Verify and stage release jars
         env:
           RELEASE_TAG: ${{ github.ref_name }}

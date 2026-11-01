@@ -15,6 +15,9 @@ concurrency:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        horseshoes: [false, true]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,11 +31,11 @@ jobs:
       - name: Check Minecraft target
         run: test "$(sed -n 's/^minecraft_version=//p' gradle.properties)" = "1.21.1"
       - name: Build and run GameTests
-        run: ./gradlew clean build runGameTest --console=plain
+        run: ./gradlew clean build runGameTest -PtestHorseshoes=${{ matrix.horseshoes }} --console=plain
       - name: Upload GameTest report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gametests-1.21.1
+          name: gametests-1.21.1-horseshoes-${{ matrix.horseshoes }}
           path: build/reports/gametest/
           if-no-files-found: warn

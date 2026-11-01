@@ -38,6 +38,10 @@ loom {
 }
 
 dependencies {
+    // Opt-in integration tests; never bundled into release jars or required by users.
+    if (providers.gradleProperty('testHorseshoes').orNull == 'true') {
+        modRuntimeOnly 'maven.modrinth:tyg1IZwj:hEUpvqEO' // Horseshoes 1.3.3, Fabric 1.21.1
+    }
     minecraft "com.mojang:minecraft:${minecraftVersion}"
     mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"

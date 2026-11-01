@@ -20,7 +20,7 @@ public abstract class AbstractDonkeyEntityMixin {
     private void unicorn$migrateLegacyHorn(NbtCompound nbt, CallbackInfo ci) {
         AbstractDonkeyEntity self = (AbstractDonkeyEntity) (Object) this;
         if (!self.hasChest() || nbt.contains("UnicornHornItem", NbtElement.COMPOUND_TYPE)) return;
-        int legacySlot = ((AbstractHorseInventoryAccessor) self).getInventory().size();
+        int legacySlot = ((AbstractHorseInventoryAccessor) self).unicorn$getHorseInventory().size();
         var entries = nbt.getList("Items", NbtElement.COMPOUND_TYPE);
         for (int i = 0; i < entries.size(); i++) {
             NbtCompound entry = entries.getCompound(i);
